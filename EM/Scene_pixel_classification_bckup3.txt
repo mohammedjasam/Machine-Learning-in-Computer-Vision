@@ -1,0 +1,231 @@
+clc;
+clear all;
+close all;
+
+file_names = dir('*.jpg');
+
+testFile = 'ButlerCarlton3.jpg';
+
+D = 2; %hue, saturation
+K_S = 2;
+K_B = 3;
+K_O = 4;
+PRECISION = 0.2;
+NO_OF_WORLD_STATES = 3;
+
+HUE_SAT = 'hs';
+RGB = 'rgb';
+YCBCR = 'ycbcr';
+ONLY_HUE = 'only_h'
+feature_used = RGB; %Changeable parameter to HUE_SAT, RGB, YCBCR
+OTH_LABEL = 0;
+SKY_LABEL = 1;
+BUILD_LABEL = 2;
+max_sz = 650000;
+
+
+
+if strcmp(feature_used, HUE_SAT)
+    D = 2;
+elseif strcmp(feature_used, RGB)
+    D = 3;
+elseif strcmp(feature_used, YCBCR)
+    D = 2;
+elseif strcmp(feature_used, ONLY_HUE)
+    D = 1;    
+else
+    fprintf(2, 'Invalid feature_used:%s\n', feature_used);
+end
+    
+%prec = 0.01;
+Pr_w_o = 0;   %Prior of Other
+Pr_w_s = 0;   %Prior of Sky
+Pr_w_b = 0;   %Prior of Building
+
+tot_no_oth_pix = 0;
+tot_no_sky_pix = 0;
+tot_no_build_pix = 0;
+
+total_train_pix = 0;
+
+X_oth = zeros(max_sz, D);
+X_sky = zeros(max_sz, D);
+X_build = zeros(max_sz, D);
+
+
+%size(file_names)
+for i = 1:size(file_names, 1)
+    if strcmp(file_names(i).name, testFile)
+        file_names(i,:) = []; %removing all attributes for i th row (i=testng image)
+        break;
+    end
+end
+%size(file_names)
+
+for i = 1: size(file_names, 1)
+    current_trained_file_name = file_names(i).name;
+    im = imread(current_trained_file_name);
+    %[nrows, ncols, ~] = size(im);
+    load([file_names(i).name '_Labels.mat'],'labels');
+    %[file_names(i).name '_Labels.mat'],'labels'
+    %figure; imshow([im repmat(labels*120,[1 1 3])]);
+    
+    if strcmp(feature_used, HUE_SAT)
+        X = rgb2hsv(im);
+    elseif strcmp(feature_used, RGB)
+        X = im;
+    elseif strcmp(feature_used, YCBCR)
+        X = rgb2ycbcr(im);
+    elseif strcmp(feature_used, ONLY_HUE)
+        X = rgb2hsv(im);    
+
+    else
+        fprintf(2, 'Invalid D:%d\n', D);
+    end
+    
+    nrows = size(X, 1);
+    ncols = size(X, 2);
+    total_train_pix = total_train_pix + (nrows*ncols);
+    fprintf(1, 'Started training for image no.: %d\n', i);
+    for j = 1: nrows
+        for k = 1:ncols
+            %for m = 1:D
+                if labels(j, k) == OTH_LABEL             
+                    tot_no_oth_pix = tot_no_oth_pix + 1;
+                    for m = 1:D
+                        X_oth(tot_no_oth_pix, m) = X(j, k, m);
+                    end
+                
+                elseif labels(j, k) == SKY_LABEL
+                    tot_no_sky_pix = tot_no_sky_pix + 1;
+                    for m = 1:D
+                        X_sky(tot_no_sky_pix, m) = X(j, k, m);
+                    end
+                elseif labels(j, k) == BUILD_LABEL
+                    tot_no_build_pix = tot_no_build_pix + 1;
+                    for m = 1:D
+                        X_build(tot_no_build_pix, m) = X(j, k, m);
+                    end
+                else
+                    fprintf(2, 'INVALID LABEL:%d', labels(j, k));
+                end
+            %end
+        end
+    end    
+end
+%Dividing the no of pixels by 'D', because,each pixel was counted 'D'
+%no of times
+% tot_no_oth_pix = tot_no_oth_pix/D;
+% tot_no_sky_pix = tot_no_sky_pix/D;
+% tot_no_build_pix = tot_no_build_pix/D;
+
+%resize - reduce pre alloced size to actual size (removing zeros)
+X_oth = X_oth(1:tot_no_oth_pix, :);
+X_sky = X_sky(1:tot_no_sky_pix, :);
+X_build = X_build(1:tot_no_build_pix, :);
+fprintf('Training Completed. Calculating priors and MOGs\n');
+
+Pr_w_o = tot_no_oth_pix/total_train_pix;
+Pr_w_s = tot_no_sky_pix/total_train_pix;
+Pr_w_b = tot_no_build_pix/total_train_pix;
+
+%size(X_oth)
+
+[lambda_o, mu_o, sig_o] = fit_mog (X_oth, K_O, PRECISION);
+'other op done'
+[lambda_s, mu_s, sig_s] = fit_mog (X_sky, K_S, PRECISION);
+'sky op done'
+[lambda_b, mu_b, sig_b] = fit_mog (X_build, K_B, PRECISION);
+'building op done'
+
+%%Testing Begins%%
+im = imread(testFile);
+if strcmp(feature_used, HUE_SAT)
+    X = rgb2hsv(im);
+elseif strcmp(feature_used, RGB)
+    X = im;
+elseif strcmp(feature_used, YCBCR)
+    X = rgb2ycbcr(im);
+elseif strcmp(feature_used, ONLY_HUE)
+    X = rgb2hsv(im);    
+else
+    fprintf(2, 'Invalid D:%d\n', D);
+end
+
+nrows = size(X, 1);
+ncols = size(X, 2);
+
+op = zeros(nrows, ncols);
+for i = 1:nrows
+    for j = 1:ncols
+        temp = zeros(1, D);
+        for k = 1:D
+            temp(k) = X(i, j, k);
+        end
+        %temp
+        %Others Likeliness
+        Pr_x_given_w_o = 0;
+        for k = 1:K_O
+            Pr_x_given_w_o = Pr_x_given_w_o + ( lambda_o(k) * my_norm_pdf( temp, mu_o(k,:), sig_o{k}) );
+        end
+        
+        %Sky Likeliness
+        Pr_x_given_w_s = 0;
+        for k = 1:K_S
+            Pr_x_given_w_s = Pr_x_given_w_s + ( lambda_s(k) * my_norm_pdf( temp, mu_s(k,:), sig_s{k}) );
+        end
+        
+        %Building Likeliness
+        Pr_x_given_w_b = 0;
+        for k = 1:K_B
+            Pr_x_given_w_b = Pr_x_given_w_b + ( lambda_b(k) * my_norm_pdf( temp, mu_b(k,:), sig_b{k}) );
+        end
+        
+        %Evidence
+        Pr_x = (Pr_x_given_w_o * Pr_w_o) + (Pr_x_given_w_s * Pr_w_s) + (Pr_x_given_w_b * Pr_w_b);
+        
+        
+        Pr_w_o_given_x = (Pr_x_given_w_o * Pr_w_o) / Pr_x;
+        Pr_w_s_given_x = (Pr_x_given_w_s * Pr_w_s) / Pr_x;
+        Pr_w_b_given_x = (Pr_x_given_w_b * Pr_w_b) / Pr_x;
+        
+        max = -1;
+        maxIndex = -1;
+        Prs = [Pr_w_o_given_x, Pr_w_s_given_x, Pr_w_b_given_x];
+        for m = 1:NO_OF_WORLD_STATES
+            if(max < Prs(m))
+                max = Prs(m);
+                maxIndex = m;
+            end
+        end
+        op(i,j) = (maxIndex-1);
+    end
+end
+
+%output = imagesc(op);
+%output = imagesc(op);
+load([testFile '_Labels.mat'],'labels');
+
+
+
+[P_O, P_S, P_B, R_O, R_S, R_B, F1_O, F1_S, F1_B] = qual_measure (op, labels);
+opfile_name = sprintf('%s.output, k=(%d-other %d-sky %d-buildg), features used = (%s)', testFile, K_O, K_S, K_B, feature_used);
+opfilepath = sprintf('output\\%s', testFile);
+fig = figure; imshow([im repmat(op*120,[1 1 3]) repmat(labels*120,[1 1 3])]);
+title(sprintf('P_O:%.3f, P_S:%.3f, P_B:%.3f, R_O:%.3f, R_S:%.3f, R_B:%.3f, F1_O:%.3f, F1_S:%.3f, F1_B:%.3f\n%s', P_O, P_S, P_B, R_O, R_S, R_B, F1_O, F1_S, F1_B, opfile_name));
+print(fig, opfilepath, '-dpng');
+
+% load([testFile '_Labels.mat'],'labels');
+% figure;
+% subplot(1,3,1);
+% imshow(im);
+% subplot(1,3,2);
+% %imshow(output);
+% imshow(repmat(op*120,[1 1 3]));
+% subplot(1,3,3);
+% %imshow(imagesc(labels));
+% imshow(repmat(labels*120,[1 1 3]));
+
+
+
+

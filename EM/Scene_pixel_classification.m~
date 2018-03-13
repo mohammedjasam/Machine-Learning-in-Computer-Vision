@@ -1,0 +1,150 @@
+clc;
+clear all;
+close all;
+
+file_names = dir('*.jpg');
+
+testFile = 'ButlerCarlton1.jpg';
+
+D = 2; %hue, saturation
+k_s = 2;
+k_b = 3;
+k_o = 4;
+prec = 0.01;
+
+HUE_SAT = 'hs';
+RGB = 'rgb';
+YCBCR = 'ycbcr';
+feature_used = HUE_SAT; %Changeable parameter to HUE_SAT, RGB, YCBCR
+OTH_LABEL = 0;
+SKY_LABEL = 1;
+BUILD_LABEL = 2;
+max_sz = 650000;
+
+
+
+if strcmp(feature_used, HUE_SAT)
+    D = 2;
+elseif strcmp(feature_used, RGB)
+    D = 3;
+elseif strcmp(feature_used, YCBCR)
+    D = 2;
+else
+    fprintf(2, 'Invalid feature_used:%s\n', feature_used);
+end
+    
+prec = 0.01;
+Pr_w_o = 0;   %Prior of Other
+Pr_w_s = 0;   %Prior of Sky
+Pr_w_b = 0;   %Prior of Building
+
+tot_no_oth_pix = 0;
+tot_no_sky_pix = 0;
+tot_no_build_pix = 0;
+
+total_train_pix = 0;
+
+X_oth = zeros(max_sz, D);
+X_sky = zeros(max_sz, D);
+X_build = zeros(max_sz, D);
+
+%size(file_names)
+for i = 1:size(file_names, 1)
+    if strcmp(file_names(i).name, testFile)
+        file_names(i,:) = [];
+        break;
+    end
+end
+%size(file_names)
+
+for i = 1: size(file_names, 1)
+    current_trained_file_name = file_names(i).name;
+    im = imread(current_trained_file_name);
+    
+    load([file_names(i).name '_Labels.mat'],'labels');
+    %[file_names(i).name '_Labels.mat'],'labels'
+    %figure; imshow([im repmat(labels*120,[1 1 3])]);
+    
+    if strcmp(feature_used, HUE_SAT)
+        X = rgb2hsv(im);
+    elseif strcmp(feature_used, RGB)
+        X = im;
+    elseif strcmp(feature_used, YCBCR)
+        X = rgb2ycbcr(im);
+    else
+        fprintf(2, 'Invalid D:%d\n', D);
+    end
+    
+    nrows = size(X, 1);
+    ncols = size(X, 2);
+    total_train_pix = total_train_pix + (nrows*ncols);
+    fprintf(1, 'Started training for image no.: %d\n', i);
+    for j = 1: nrows
+        for k = 1:ncols
+            
+            if labels(j, k) == OTH_LABEL             
+                
+                tot_no_oth_pix = tot_no_oth_pix + 1;
+                X_oth(tot_no_oth_pix, :) = [X(j, k, 1), X(j, k, 2)];
+                
+            elseif labels(j, k) == SKY_LABEL
+                
+                tot_no_sky_pix = tot_no_sky_pix + 1;
+                X_sky(tot_no_sky_pix, :) = [X(j, k, 1), X(j, k, 2)];
+                
+            elseif labels(j, k) == BUILD_LABEL
+                
+                tot_no_build_pix = tot_no_build_pix + 1;
+                X_build(tot_no_build_pix, :) = [X(j, k, 1), X(j, k, 2)];
+                
+            else
+                fprintf(2, 'INVALID LABEL:%d', labels(j, k));
+            end
+        end
+    end    
+end
+%resize - redoce pre alloced size to actual size
+X_oth = X_oth(1:tot_no_oth_pix, :);
+X_sky = X_sky(1:tot_no_sky_pix, :);
+X_build = X_build(1:tot_no_build_pix, :);
+
+fprintf('Training Completed. Calculating priors and MOGs\n');
+Pr_w_o = tot_no_oth_pix/total_train_pix;
+Pr_w_s = tot_no_sky_pix/total_train_pix;
+Pr_w_b = tot_no_build_pix/total_train_pix;
+
+size(X_oth)
+
+[lambda_o, mu_o, sig_o] = fit_mog (X_oth, k_o, prec);
+'other op done'
+[lambda_s, mu_s, sig_s] = fit_mog (X_sky, k_s, prec);
+'sky op done'
+[lambda_b, mu_b, sig_b] = fit_mog (X_built, k_b, prec);
+'building op done'
+
+%%Testing Begins%%
+im = imread(testFile);
+if strcmp(feature_used, HUE_SAT)
+    X = rgb2hsv(im);
+elseif strcmp(feature_used, RGB)
+    X = im;
+elseif strcmp(feature_used, YCBCR)
+    X = rgb2ycbcr(im);
+else
+    fprintf(2, 'Invalid D:%d\n', D);
+end
+
+nrows = size(X, 1);
+ncols = size(X, 2);
+
+for i = 1:nrows
+    for j = 1:cols
+        Pr_x_given_w_o = 0;
+        for k = 1:k_o
+            Pr_x_given_w_o = Pr_x_given_w_o + (lambda_o(k) * my_norm_pdf([]))
+        end
+    end
+end
+
+
+

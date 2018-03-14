@@ -1,4 +1,4 @@
-function [lambda, mean, sigma] = MOG_FCN (image_matrix, K, precision, image_num, SIZE)
+function [lambda, mean, sigma] = applyMoG (image_matrix, K, precision, image_num, SIZE)
          
 
  % Initialize all values in lambda to 1/K.
@@ -33,7 +33,6 @@ function [lambda, mean, sigma] = MOG_FCN (image_matrix, K, precision, image_num,
     
   % The main loop.
     iterations = 0;
-    disp(iterations);
     previous_L = 1000000; % just a random initialization
     while true
         % Expectation step.
@@ -44,7 +43,7 @@ function [lambda, mean, sigma] = MOG_FCN (image_matrix, K, precision, image_num,
             
             sigma{k}=diag(sigma{k});
             sigma{k}=diag(sigma{k}); % For creating matrix with elements only along the diagonal 
-            l(:,k) =lambda(k) * mvgd1(image_matrix, mean(k,:), sigma{k}, image_num, SIZE);
+            l(:,k) =lambda(k) * mvn_pdf(image_matrix, mean(k,:), sigma{k}, image_num, SIZE);
         end
         
         % Compute the responsibilities by normalizing.
@@ -80,22 +79,17 @@ function [lambda, mean, sigma] = MOG_FCN (image_matrix, K, precision, image_num,
         % Compute the log likelihood L.
         temp = zeros (I,K);
         for k = 1 : K
-            temp(:,k) = lambda(k)*mvgd1(image_matrix, mean(k,:), sigma{k}, image_num, SIZE);
+            temp(:,k) = lambda(k)*mvn_pdf(image_matrix, mean(k,:), sigma{k}, image_num, SIZE);
         end
         temp = sum(temp,2);
         temp = log(temp);        
         L = sum(temp);
         L=abs(L);
-        disp(L);
  
         iterations = iterations + 1;        
-        disp([num2str(iterations) ': ' num2str(L)]);
         
         if abs(L - previous_L) < precision
-            %msg = [num2str(iterations) ' iterations, log-likelihood = ', ...
-                %num2str(L)];
-            %disp(msg);
-            disp(' EM algorithm executed! ');
+            disp(' ');
             break;
         end
         

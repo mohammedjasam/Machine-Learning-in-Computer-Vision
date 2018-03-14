@@ -7,4 +7,4 @@ for ii = 1:size(allIms,1)
     [iRow, iCol] = ind2sub([nImPerLine, nImPerLine],ii);
     showIm((iRow-1)*nrows+1:iRow*nrows, (iCol-1)*ncols+1:iCol*ncols, :) = im;
 end
-figure; imagesc(showIm); title(titleStr);
+figure; imshow(showIm,[]); title(titleStr);

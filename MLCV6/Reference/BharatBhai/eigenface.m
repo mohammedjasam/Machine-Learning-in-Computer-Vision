@@ -24,7 +24,7 @@ end
 allFaceIms_training = allFaceIms_training'; %every column in allFaceIms_training is one face image
 
 %222222222 compute the average face vector
-I_mean = mean(allFaceIms_training,2);
+I_mean = mean(allFaceIms_training, 2);
 bbbbb = allFaceIms_training;
 
 %333333333 Subtract the mean face from each face so each face retains only special
@@ -33,7 +33,7 @@ allFaceIms = bsxfun(@minus, allFaceIms_training, I_mean);
 
 %Compute eigen vectors for these faces after substracting mean and their associated eigen values
 [V,D] = eig(allFaceIms'*allFaceIms);
-return
+
 %Plot histogram of the eigen values
 bar(diag(D))
 
@@ -48,6 +48,7 @@ U = U(:,end-K+1:end);
 %An example image displayed for eigen face second best
 figure;
 imshow(reshape(U(:,end-1), [40, 30, 3]));
+
 
 %Compute feature vectors (wieghts) for each face image so it can be
 %recovered by taking product of alpha and eigen face matrix.
@@ -83,7 +84,7 @@ nTest = size(allFaceIms_testing,2);
 
 % compute euclidean (norm 2) distance
 Dis = pdist2(alpha', alpha_testing','euclidean');
-
+return
 
 %Accuracy
 [acc_Eucl,min_dist_Eul,I_Eul, comp_Eul] = comAccu(Dis,nTest,labels1,labels2);

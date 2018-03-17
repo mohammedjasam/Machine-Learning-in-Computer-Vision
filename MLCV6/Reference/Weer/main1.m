@@ -105,7 +105,7 @@ Square_A = A' * A;
 
 %P = Square_A * X;
 %Q = X * lambda;
-    
+return 
 
 % if isequal((Square_A * X),(lambda * X))
 %     

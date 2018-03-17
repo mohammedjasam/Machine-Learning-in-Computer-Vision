@@ -11,7 +11,7 @@ K = 100; %the number of eigen vectors
 %training
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% read in all the images
+%111111111111 read in all the images
 allFaceIms_training = [];
 labels1 = []; %each row represents [folder, image in the folder] i.e., [person, which image of the person].
 
@@ -23,17 +23,17 @@ for iSubject = 1:nSubject
 end
 allFaceIms_training = allFaceIms_training'; %every column in allFaceIms_training is one face image
 
-return
-% compute the average face vector
+%222222222 compute the average face vector
 I_mean = mean(allFaceIms_training,2);
+bbbbb = allFaceIms_training;
 
-% Subtract the mean face from each face so each face retains only special
+%333333333 Subtract the mean face from each face so each face retains only special
 % characteristics peculiar to it
 allFaceIms = bsxfun(@minus, allFaceIms_training, I_mean);
 
 %Compute eigen vectors for these faces after substracting mean and their associated eigen values
 [V,D] = eig(allFaceIms'*allFaceIms);
-
+return
 %Plot histogram of the eigen values
 bar(diag(D))
 

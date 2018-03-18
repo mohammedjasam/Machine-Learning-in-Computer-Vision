@@ -22,9 +22,7 @@ for k = 3 : length(subFolders)
     dirString = strcat(Dataset, sub, '\');
     
     % Extracting the image count in each sub folder
-    NumImagesInFolder = dir([dirString '*.jpg']);
-    
-    
+    NumImagesInFolder = dir([dirString '*.jpg']);    
     
     % Creating the contents of each subfolder
     for i = 1 : size(NumImagesInFolder,1)
@@ -35,34 +33,13 @@ for k = 3 : length(subFolders)
     [Images,nrows,ncols,np] = getAllIms(dirString,colorSpace);
     
     if isempty(Images), continue; end
+    
+    % Appending the rows in allImages
     allImages = [allImages; Images];  
+    
 end
+
 dataMatrix = allImages';
 
 
-
-
-
-% 
-% 
-%     
-%     
-%    allImages = [];labels = [];
-%    for Class = 1:NumClasses
-%         [Images,nrows,ncols,np] = getAllIms(sprintf('%s%02d\\',Dataset,NumClasses),colorSpace);
-% %         disp(sprintf('%s%02d\\',Dataset,NumClasses));
-%     %     return
-% 
-%         if isempty(Images), continue; end
-%         allImages = [allImages; Images];    
-%         labels = [labels; [Class*ones(size(Images,1),1) (1:size(Images,1))']]; 
-%     end
-%     allImages = allImages';
-%     
-%     return
-%     
-%     
-    
-    
-    
     

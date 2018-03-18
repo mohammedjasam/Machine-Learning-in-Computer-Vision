@@ -25,7 +25,7 @@ Train_Mean = mean(TrainingMatrix, 2);
 
 % Step 3: Subtract Mean from each pixel of the TrainingMatrix
 TrainingMatrixOriginal = TrainingMatrix; % Copy of original training matrix
-% Subtracting Mean of each row from each row of the Training Matrix
+% Subtracting Mean of each row from each cell of the Training Matrix
 for i = 1 : size(TrainingMatrix,1)
     TrainingMatrix(i,:) = TrainingMatrix(i,:) - Train_Mean(i);
 end
@@ -69,4 +69,7 @@ TestingAlpha = Uk' * TestingMatrix;
 TestingFeatureVector = TestingAlpha';
 
 % Step 6: Measuring the distance between Training and Testing Features
+DistanceMatrix = pdist2(TrainingFeatureVector, TestingFeatureVector, 'euclidean'); % euclidean, minkowski, cityblock, hamming, jaccard, mahalanobis
+
+
 

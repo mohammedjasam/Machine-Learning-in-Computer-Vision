@@ -6,7 +6,7 @@ if strcmp(colorSpace,'Gradient')
 else
     Gsigmax = [];
 end
-
+ 
 files = dir([directory '*.jpg']);
 if isempty(files)
     allIms = [];

@@ -105,7 +105,7 @@ Square_A = A' * A;
 
 %P = Square_A * X;
 %Q = X * lambda;
-return 
+
 
 % if isequal((Square_A * X),(lambda * X))
 %     
@@ -197,7 +197,7 @@ Result = atIndex;
 %end
 disp('-----------')
 Result
-
+return 
 
 for i = 1:TSize
    figure();

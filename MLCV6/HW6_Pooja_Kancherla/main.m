@@ -29,6 +29,6 @@ n_diff_faces = 28;
 %% This module is used to run the eigen faces algorithm for single K
 
 % This helps us select the number of features from the matrix
-K = 75;
+K = 100;
 
 what_goes_here = run_algo(train_images, test_images, colorSpace, n_diff_faces, K);

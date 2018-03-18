@@ -111,7 +111,7 @@ for i=1:N
 end
 
 d = sqrt(dsq);
-return
+retu
 %Accuracy
 [acc_Mahal,min_dist_mahal,I_mahal, comp_mahal] = comAccu(d,nTest,labels1,labels2);
 

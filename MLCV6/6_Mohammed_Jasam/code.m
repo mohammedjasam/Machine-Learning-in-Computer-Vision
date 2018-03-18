@@ -71,5 +71,14 @@ TestingFeatureVector = TestingAlpha';
 % Step 6: Measuring the distance between Training and Testing Features
 DistanceMatrix = pdist2(TrainingFeatureVector, TestingFeatureVector, 'euclidean'); % euclidean, minkowski, cityblock, hamming, jaccard, mahalanobis
 
+C = [TrainingAlpha, TestingAlpha];
+invcov = inv(cov(C'));
 
+for i=1:size(TrainingMatrix,2)
+    diff = repmat(TrainingAlpha(:,i), 1, size(TestingMatrix,2)) - TestingAlpha;
+    dsq(i,:) = sum((invcov*diff).*diff , 1);
+end
+
+distance_matrix = sqrt(dsq);
+[min_distance, index] = min(distance_matrix);
 

@@ -73,6 +73,7 @@ allFaceIms_testing = allFaceIms_testing';
 % Substract the mean of the original training dataset from the test image
 % dataset so only those characteristics are retained that are unique to the
 % image under consideration
+I_mean = mean(allFaceIms_testing, 2);
 allFaceIms_test = bsxfun(@minus, allFaceIms_testing, I_mean);
 
 %Determine the feature vector(weights) that uniquely identify the
@@ -111,8 +112,7 @@ for i=1:N
 end
 
 d = sqrt(dsq);
-return
+
 %Accuracy
 [acc_Mahal,min_dist_mahal,I_mahal, comp_mahal] = comAccu(d,nTest,labels1,labels2);
 
-return

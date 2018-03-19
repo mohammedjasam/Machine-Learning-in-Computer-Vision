@@ -52,9 +52,8 @@ else
     %% This module is used to test the accuracy with respect to changes in K
     n_train_images = 173;
     
-    % Displaying images is set to 0 by default to reduce cpu usage
-    display_images = 0;
-    
+    % 
+    display_images = 1;
     acc_data = [];
     for K = 1 : 30
         acc_matrix = run_algo(train_images, test_images, colorSpace, n_diff_faces, K*5, display_images);

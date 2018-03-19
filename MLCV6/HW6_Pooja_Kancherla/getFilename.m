@@ -1,4 +1,4 @@
-function [pathToFile, person, bucket, onlypath] = getFileNameFromIndex(dataset, index, n_diff_faces)
+function [file_path, bucket] = getFilename(dataset, index, n_diff_faces)
     cur_index = 0;
     
     if strcmpi(dataset, 'training') == 1
@@ -17,9 +17,7 @@ function [pathToFile, person, bucket, onlypath] = getFileNameFromIndex(dataset, 
             cur_index = cur_index + 1;
             if  cur_index == index
                 bucket = sprintf('%02d', i);
-                onlypath = sprintf('%02d\\%s', i, (files_in_dir(j).name));
-                pathToFile = sprintf('%s%02d\\%s', root, i, (files_in_dir(j).name));
-                person = i;
+                file_path = sprintf('%s%02d\\%s', root, i, (files_in_dir(j).name));
                 break;
             end
             

@@ -24,6 +24,9 @@ what_goes_here = [];
     % Eigen Decomposition
     [V, DiagonalMatrix] = eig(train_datamatrix.' * train_datamatrix);
     
+    % Displaying the Eigen Values
+    bar(diag(DiagonalMatrix))
+    
     % Selecting top K
     V = V(:, end-K+1 : end);
     
@@ -88,22 +91,21 @@ what_goes_here = [];
         
         
         for i = 1 : num_test_images 
-            [test_image_pathh, person, bucket_test, imagepath_test] = getFileNameFromIndex('testing', i, n_diff_faces);
-            [matchedFilePath, person, bucket_train, imagepath_train] = getFileNameFromIndex('training', round(index(i)), n_diff_faces);
-            
+            [test_image_path, bucket_test] = getFilename('testing', i, n_diff_faces);
+            [matched_file_path, bucket_train] = getFilename('training', round(index(i)), n_diff_faces);
+                        
             if bucket_test == bucket_train
                 faces = [faces; str2num(bucket_test)];
 
                 Predicted = Predicted + 1;
                 if display_images == 1
-                    if rand() < 0.1
+                    if rand() < 0.01 % Displays images randomly with 10% probability
                         figure();
-                        subplot(1,2,1); imshow(imread(test_image_pathh)); title('Image from testing data');
-                        subplot(1,2,2); imshow(imread(matchedFilePath)); title('Match from the training data');                
+                        subplot(1,2,1); imshow(imread(test_image_path)); title('Image from testing data');
+                        subplot(1,2,2); imshow(imread(matched_file_path)); title('Match from the training data');                
                     end
                 end
-            end
-            
+            end            
         end
         
         acc = Predicted/num_test_images;        

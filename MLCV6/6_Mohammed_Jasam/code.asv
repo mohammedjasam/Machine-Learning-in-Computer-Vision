@@ -13,12 +13,12 @@ colorSpace = 'HSV'; %RGB, HSV, YCbCr, HSVYCbCr, Gray, Gradient
 K = 100;
 
 % Number of different faces in the training dataset
-NumSubjects = 28;
+NumClasses = 28;
 
 %% TRAINING
 
 % Step 1: Reading Dataset and creating the matrix
-[TrainingMatrix, nrows, ncols, np, TrainingContents] = getDataMatrix(TrainingDataset, colorSpace, NumSubjects);
+[TrainingMatrix, nrows, ncols, np, TrainingContents] = getDataMatrix(TrainingDataset, colorSpace, NumClasses);
 
 % Step 2: Compute the mean
 Train_Mean = mean(TrainingMatrix, 2);
@@ -52,7 +52,7 @@ TrainingFeatureVector = TrainingAlpha';
 %% TESTING
 
 % Step 1: Reading the Testing dataset
-[TestingMatrix, nrows, ncols, np, TestingContents] = getDataMatrix(TestingDataset, colorSpace, NumSubjects);
+[TestingMatrix, nrows, ncols, np, TestingContents] = getDataMatrix(TestingDataset, colorSpace, NumClasses);
 
 % Step 2: Compute the mean
 Test_Mean = mean(TestingMatrix, 2);
@@ -72,5 +72,7 @@ TestingFeatureVector = TestingAlpha';
 [MinDistance, Indices] = pdist2(TrainingFeatureVector, TestingFeatureVector, 'cityblock', 'Smallest', 1); % euclidean, minkowski, cityblock, hamming, jaccard, mahalanobis
 
 % Step 7: Calculating Accuracy of Faces
-[AccuracyFaces, AccuracySubjects] = checkAccuracy(Indices, size(TestingMatrix, 2), TrainingContents, TestingContents, NumSubjects);
+[AccuracyFaces, MatchedSubjects] = checkAccuracy(Indices, size(TestingMatrix, 2), TrainingContents, TestingContents);
 
+% Step 8: Calculating the Accuracy of Subjects
+for i = 1:

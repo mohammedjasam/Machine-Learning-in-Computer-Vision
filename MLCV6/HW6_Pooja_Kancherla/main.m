@@ -37,14 +37,14 @@ if var_k == 0
     fprintf('------------------------------------\n');
     fprintf('Value of K: %d\n', K);
     fprintf('------------------------------------\n');
-    fprintf('euclidean Image Accuracy: %.2f \n', acc_matrix(2));
-    fprintf('euclidean Subject Accuracy: %.2f \n', acc_matrix(5));
+    fprintf('Euclidean Image Accuracy: %.2f \n', acc_matrix(2));
+    fprintf('Euclidean Subject Accuracy: %.2f \n', acc_matrix(5));
     fprintf('------------------------------------\n');
-    fprintf('manhattan Image Accuracy: %.2f \n', acc_matrix(3));
-    fprintf('manhattan Subject Accuracy: %.2f \n', acc_matrix(6));
+    fprintf('Manhattan Image Accuracy: %.2f \n', acc_matrix(3));
+    fprintf('Manhattan Subject Accuracy: %.2f \n', acc_matrix(6));
     fprintf('------------------------------------\n');
-    fprintf('mahalanobis Image Accuracy: %.2f \n', acc_matrix(4));
-    fprintf('mahalanobis Subject Accuracy: %.2f \n', acc_matrix(7));
+    fprintf('Mahalanobis Image Accuracy: %.2f \n', acc_matrix(4));
+    fprintf('Mahalanobis Subject Accuracy: %.2f \n', acc_matrix(7));
     fprintf('------------------------------------\n');
     
     

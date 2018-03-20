@@ -11,7 +11,7 @@ subFolders = files(dirFlags);
 
 allImages = [];
 contents = [];
-
+j = 1;
 % Print folder names to command window.
 for k = 3 : length(subFolders)
     
@@ -24,9 +24,11 @@ for k = 3 : length(subFolders)
     % Extracting the image count in each sub folder
     NumImagesInFolder = dir([dirString '*.jpg']);    
     
+    
     % Creating the contents of each subfolder
     for i = 1 : size(NumImagesInFolder,1)
-        contents = [contents; [str2num(sub) i]];
+        contents = [contents; [str2num(sub) i j]];
+        j = j + 1;
     end
         
     % Pulling the images

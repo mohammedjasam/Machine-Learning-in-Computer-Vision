@@ -19,6 +19,7 @@ function[AccuracyFaces, AccuracySubjects] = checkAccuracy(Indices, NumTestImages
         end
     end
     
+%     [MinDistance, Indices] = pdist2(TrainingFeatureVector, TestingFeatureVector, 'cityblock', 'Smallest', 1); % euclidean, minkowski, cityblock, hamming, jaccard, mahalanobis
     %Accuracy of Images from Total Test Images
     AccuracyFaces = CountImages/NumTestImages;
     

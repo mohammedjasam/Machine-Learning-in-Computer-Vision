@@ -50,16 +50,16 @@ what_goes_here = [];
     end
     test_data = test_data';
     
-    % Computing Mean of the data
-    test_mean = zeros(size(test_data, 1), 1);
-    
-    for i = 1 : size(test_data, 2)
-        test_mean = test_mean + test_data(:, i);
-    end
-    test_mean = test_mean./ size(test_data, 2);
+%     % Computing Mean of the data
+%     test_mean = zeros(size(test_data, 1), 1);
+%     
+%     for i = 1 : size(test_data, 2)
+%         test_mean = test_mean + test_data(:, i);
+%     end
+%     test_mean = test_mean./ size(test_data, 2);
     
     % Subtracting mean from datamatrix
-    test_datamatrix = bsxfun(@minus, test_data, test_mean);
+    test_datamatrix = bsxfun(@minus, test_data, train_mean);
     
     % Projecting to subspace in order to obtain features
     test_alpha = U' * test_datamatrix;

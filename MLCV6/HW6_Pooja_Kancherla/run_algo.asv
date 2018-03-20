@@ -1,5 +1,5 @@
-function [AccMat, sub_mat] = run_algo(train_images, test_images, colorSpace, n_diff_faces, K, display_images)
-sub_mat = [];
+function AccMat = run_algo(train_images, test_images, colorSpace, n_diff_faces, K, display_images)
+what_goes_here = [];
     %% Training
     train_data = [];
     
@@ -118,10 +118,12 @@ sub_mat = [];
             end
         end
         
-        face_acc = [face_acc; (face_count/n_diff_faces)];        
-        test_feature_vector = test_alpha';
-        subject_acc = accuracy_subjects(train_images, test_images, n_diff_faces, train_feature_vector, test_feature_vector);
-        sub_mat = [sub_mat; subject_acc];
+        face_acc = [face_acc; (face_count/n_diff_faces)];
+
+        
+
+        [matched_file_path, bucket_train] = getFilename('training', round(index(i)), n_diff_faces);
+
+
     end
     AccMat = [AccMat; face_acc];
-    

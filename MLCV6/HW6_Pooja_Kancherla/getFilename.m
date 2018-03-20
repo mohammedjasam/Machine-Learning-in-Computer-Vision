@@ -11,7 +11,6 @@ function [file_path, bucket] = getFilename(dataset, index, n_diff_faces)
         path = sprintf('%s%02d\\', root, i);
         files_in_dir = dir(path);
         no_files_in_dir = size(files_in_dir, 1);
-        
         for j = 3 : no_files_in_dir
             
             cur_index = cur_index + 1;

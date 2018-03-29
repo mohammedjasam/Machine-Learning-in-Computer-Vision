@@ -121,7 +121,8 @@ sub_mat = [];
         face_acc = [face_acc; (face_count/n_diff_faces)];        
         test_feature_vector = test_alpha';
         subject_acc = accuracy_subjects(train_images, test_images, n_diff_faces, train_feature_vector, test_feature_vector);
-        sub_mat = [sub_mat; subject_acc];
+        sub_mat = [sub_mat; subject_acc];     
     end
-    AccMat = [AccMat; face_acc];
+    
+%     AccMat = [AccMat; face_acc];
     

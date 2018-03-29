@@ -1,0 +1,17 @@
+%% Clear
+clc; 
+clear all; 
+close all;
+
+%% Data
+training_directory = 'training\';
+testing_directory = 'testing\';
+
+%% Training
+training_files = dir(training_directory);
+rotation_angle = []; % Given
+w = [];
+for i = 3 : size(training_files)
+    file_name = str2double(training_files(i).name(1:4));
+    rotation_angle = [rotation_angle;   str2double(training_files(i).name(1:4))];
+end

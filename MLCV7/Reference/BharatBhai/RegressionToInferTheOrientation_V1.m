@@ -54,7 +54,7 @@ plot(Gr_truth,w_inferred)
 %Check the accuracy of the model by comparing the inferred with the actual
 %values
 Eval_linReg = sum(abs(w_inferred(:) - Gr_truth(:)))/size(Gr_truth,1);
-return
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %feature selection
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

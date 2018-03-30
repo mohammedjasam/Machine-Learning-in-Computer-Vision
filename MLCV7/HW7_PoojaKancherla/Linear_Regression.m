@@ -59,7 +59,7 @@ X_test = [ones_row; X_test]; % Adding the 1s row at the beginning
 %% Inferring the rotation on test files
 w_inferred = phi' * X_test;
 
-%% Calculating the accuracy
+%% Calculating the diff
 diff_sum = 0;
 for i = 1 : size(testing_files, 1) - 2
    diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));

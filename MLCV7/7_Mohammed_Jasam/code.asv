@@ -17,6 +17,9 @@ TestingPath = 'testing\';
 
 % Calculating Phi to Infer Rotation of the Image
 phi1 = pinv(XTrain') * WTrain;
+
+
+
 %% Task 1: Linear Regression
 
 % Inference of Rotation Angle on Testing Data
@@ -31,22 +34,30 @@ fprintf('Linear Regression: %f\n', LinearRegressionResult);
 % Graph
 draw(GT, Inference1, 'Linear Regression');
 
-%% Task 2: Feature Selection
+
+
+%% Task 2: Feature Selection to reduce the Dimensionality for faster computation
+
+% Copying vars
+WTrain2 = WTrain;
 
 % Calculating Variance on Training Data
 TrainingVariance = var(XTrain, 0, 2);
 
+% Threshold value to reduce the number of values
+Threshold = 40;
+
 % Selecting Features in Training Data
-XTrain = XTrain(TrainingVariance > 100, :);
+XTrain2 = XTrain(TrainingVariance > Threshold, :);
 
 % Selecting Features in Testing Data
-XTest = XTest(TrainingVariance > 100, :);
+XTest2 = XTest(TrainingVariance > Threshold, :);
 
 % Calculating Phi to Infer Rotation of the Image
-phi2 = pinv(XTrain') * WTrain;
+phi2 = pinv(XTrain2') * WTrain2;
 
 % Inference of Rotation Angle on Testing Data
-Inference2 = XTest' * phi2;
+Inference2 = XTest2' * phi2;
 
 % Evaluation of accuracy
 FeatureSelection = sum(abs(Inference2(:) - GT(:)))/size(GT, 1);
@@ -57,14 +68,30 @@ fprintf('Feature Selection: %f\n', FeatureSelection);
 % Graph
 draw(GT, Inference2, 'Feature Selection');
 
-%% Task 3: Bayesian Solution
+
+
+%% Task 3: Bayesian Solution based on Linear Regression and Selected Features
+
+% Copying vars
+XTrain3 = XTrain2; % Using the Feature Selected 
+WTrain2 = WTrain;
+XTest3 = XTest2;
+
+% Variance in Prior
+VarPrior = var(phi2);
+
+[Inference3, VarianceTest3, VarianceTrain3, AInverse] = fit_blr (XTrain3, WTrain2, VarPrior, XTest2);
+
+% Inference of Rotation Angle on Testing Data
+BayesianSolution = sum(abs(Inference3(:) - GT(:)))/size(GT,1);
+
+% Displaying Linear Regression Result
+fprintf('Bayesian Solution: %f\n', BayesianSolution);
+
+% Graph
+draw(GT, Inference3, 'Bayesian Solution');
 
 
 
-
-
-
-
-
-
+%% Task 4: Non-Linear Regression with Regularization
 

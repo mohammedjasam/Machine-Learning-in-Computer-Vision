@@ -64,8 +64,55 @@ X_test_temp(all(X_test_temp == 0, 2), :) = [];
 X_test_temp = [ones_row; X_test_temp]; % Adding the 1s row at the beginning
 
 
+%% Bayesian Linear Regression
+num_train = size(X_train_temp, 2); % Number of training images
+dim_train = size(X_train_temp, 1) - 1; % Dimensionality of the training images
+num_test = size(X_test_temp,2); % Number of training images
+
+% Calculating mean
+temp = 0;
+for i = 1 : size(w_train, 1)
+    temp = temp + w_train(i);
+end
+mean_train = temp / num_train;
+
+% Calculating variance
+temp = 0;
+variance_train = 0;
+for i = 1 : size(w_train, 1)
+    temp = w_train(i) - mean_train;
+    temp = temp ^ 2;
+    variance_train = variance_train + temp;
+end
+variance_train = variance_train / num_train;
+
+% calculating the min value for variance
+variance = fminbnd (@(variance) calc_cost (variance, X_train_temp, num_train, w_train, var(phi)), 0, variance_train);
+
+% Calculating A inverse
+A_inverse = 0;    
+if dim_train > num_train
+    M = X_train_temp' * X_train_temp + (variance/var(phi))*eye(num_train);
+    inv_train_temp = inv(M) * X_train_temp';
+    A_inverse = eye(dim_train+1) - X_train_temp * inv_train_temp;
+    A_inverse = var(phi) * A_inverse;    
+else    
+    A_inverse = inv ((X_train_temp*X_train_temp') ./ variance + eye(dim_train+1) ./ var(phi));
+end
+
+% Compute the mean for each test example.
+temp = X_test_temp' * A_inverse;
+mean_test = (temp * X_train_temp * w_train) ./ variance;
+
+% Compute the variance for each test example.    
+variance_test = repmat(variance, num_train, 1);
+for i = 1 : num_train
+    variance_test(i) = variance_test(i) + temp(i,:) * X_test_temp(:, i);
+end
+
+
 %% Inferring the rotation on test files
-w_inferred = phi' * X_test_temp;
+w_inferred = mean_test;
 
 %% Calculating the diff
 diff_sum = 0;
@@ -80,4 +127,4 @@ plot(w_inferred);
 hold on
 plot(ground_truth);
 legend('Inference','Ground Truth');
-title('Feature Selection');
+title('Bayesian using Regularization');

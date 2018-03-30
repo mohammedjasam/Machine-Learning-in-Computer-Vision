@@ -13,6 +13,7 @@ training_files = dir(training_directory);
 w_train = []; % Given w
 X_train = [];
 
+
 % Creating the image column matrix
 for i = 3 : size(training_files)
     w_train = [w_train; str2double(training_files(i).name(1:4))]; % Extracting the rotation angle from filename

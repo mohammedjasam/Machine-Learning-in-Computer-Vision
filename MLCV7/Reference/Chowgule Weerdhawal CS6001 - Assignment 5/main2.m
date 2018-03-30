@@ -68,7 +68,7 @@ phi_hat=(X_train_mat)\(X_train*w_train);
 w_train_hat=X_train'*phi_hat;
 w_test_hat=X_test'*phi_hat;
 
-w_train_hat_gt=w_train_ hat./(pi*pi);
+w_train_hat_gt=w_train_hat./(pi*pi);
 w_test_hat_gt=w_test_hat./(pi*pi);
 w_train_gt=w_train/(pi*pi);
 w_test_gt=w_test/(pi*pi);

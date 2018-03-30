@@ -102,4 +102,6 @@ for i=1:size(files,1)
 end
 evaluation = evaluation/size(files,1);
 disp(evaluation);
-figure; plot(w_t,W,'r');
+figure; plot(w_t);
+hold on 
+plot(W);

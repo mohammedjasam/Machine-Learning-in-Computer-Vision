@@ -23,31 +23,33 @@ end
 
 X_train = double(X_train);
 ones_row = ones(1, size(X_train, 2));
-X_train = [ones_row; X_train]; % Adding the 1s row at the beginning
+var_mat = var(X_train, 0, 2);
+temp = var_mat > 100;
+X_train_temp = X_train .* temp;
+X_train_temp(all(X_train_temp == 0, 2), :) = [];
+X_train_temp = [ones_row; X_train_temp]; % Adding the 1s row at the beginning
 
-% % Calculate phi
-% phi_old = pinv(X)' * w_train;
-
-M = X_train * X_train';
+%% Calculating phi to learn parameters
+M = X_train_temp * X_train_temp';
 [r,~] = size(M);
 M(1:r+1:end) = M(1:r+1:end) + 0.001; % Adding a small value to the diagonal to avoid singularity
 
 X_train_new = M;
+
 z = inv(X_train_new);
-y = X_train * w_train;
-phi_new = z * y;
-phi = phi_new;
+y = X_train_temp * w_train;
+phi = z * y;
 
 
 %% Testing
 testing_files = dir(testing_directory);
 
-Gr_truth = []; % Given w
+ground_truth = []; % Given w
 X_test = [];
 
 % Creating the image column matrix
 for i = 3 : size(testing_files)
-    Gr_truth = [Gr_truth; str2double(testing_files(i).name(1:4))]; % Extracting the rotation angle from filename
+    ground_truth = [ground_truth; str2double(testing_files(i).name(1:4))]; % Extracting the rotation angle from filename
     image = imread([testing_directory testing_files(i).name]);
     image = image(:,:,1);
     X_test = [X_test image(:)];
@@ -55,16 +57,27 @@ end
 
 X_test = double(X_test);
 ones_row = ones(1, size(X_test, 2));
-X_test = [ones_row; X_test]; % Adding the 1s row at the beginning
+var_mat = var(X_train, 0, 2);
+temp = var_mat > 100;
+X_test_temp = X_test .* temp;
+X_test_temp(all(X_test_temp == 0, 2), :) = [];
+X_test_temp = [ones_row; X_test_temp]; % Adding the 1s row at the beginning
 
-w_inferred = phi' * X_test;
 
+%% Inferring the rotation on test files
+w_inferred = phi' * X_test_temp;
+
+%% Calculating the accuracy
 diff_sum = 0;
-
 for i = 1 : size(testing_files, 1) - 2
-   diff_sum = diff_sum + abs(w_inferred(i) - Gr_truth(i));
+   diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
 end
 diff_sum = diff_sum / (size(testing_files, 1) - 2);
 disp(diff_sum);
 
-% plot(Gr_truth, w_inferred);
+%% Visualization
+plot(w_inferred);
+hold on
+plot(ground_truth);
+legend('Inference','Ground Truth');
+title('Feature Selection');

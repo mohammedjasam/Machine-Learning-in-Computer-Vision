@@ -49,7 +49,7 @@ X_test = [ones(1,size(X_test,2)); X_test];
 %on test images
 w_inferred = phi'*X_test;
 
-plot(Gr_truth,w_inferred)
+plot(w_inferred)
 
 %Check the accuracy of the model by comparing the inferred with the actual
 %values
@@ -86,7 +86,7 @@ X_new_test = X_test(variance>100,:);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Add regularization to the above model or Bayesian solution
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+% We get the inference, 
 [w_infer_reg, var_test, vari, A_inv] = fit_blr (X_new, w, var(phi), X_new_test);
 
 
@@ -96,12 +96,14 @@ lambda = vari/var(phi);
 %phi_reg = (X_new*X_new' + lambda*eye(size(X_new,1)))\(X_new*w);
 
 %phi_reg = lassoglm(X_new',w,'normal', 'Lambda', lambda);
-
+hold on;
+plot(Gr_truth)
 hold on;
 %w_infer_reg = phi_reg'*X_new_test;
-plot(Gr_truth,w_infer_reg)
+plot(w_infer_reg)
 
 Eval_Regu = sum(abs(w_infer_reg(:) - Gr_truth(:)))/size(Gr_truth,1);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Based on the selected features, Implement the nonlinear regression 
 %(e.g., polynomial regression) using the regularization
@@ -111,6 +113,7 @@ Eval_Regu = sum(abs(w_infer_reg(:) - Gr_truth(:)))/size(Gr_truth,1);
 d = 2; %change the value of d to the desired number of polynomial powers 
 
 Z = zTransform(d, D, N, X_new);
+
 
 phi_reg_nonLinear = (Z*Z' + lambda*eye(size(Z,1)))\(Z*w);
 
@@ -123,6 +126,7 @@ w_infer_nonLinear = phi_reg_nonLinear'*Z_test;
 plot(Gr_truth,w_infer_nonLinear)
 
 Eval_NonL = sum(abs(w_infer_nonLinear(:) - Gr_truth(:)))/size(Gr_truth,1);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Without using the feature selection, implement the dual nonlinear 
 %regression with regularization.
@@ -146,3 +150,4 @@ Eval_Dual = sum(abs(w_dual_infer(:) - Gr_truth(:)))/size(Gr_truth,1);
 
 xlabel('Ground Truth rotations of the ring in the test images');
 ylabel('Inferred rotations of the ring in the corresponding images');
+return

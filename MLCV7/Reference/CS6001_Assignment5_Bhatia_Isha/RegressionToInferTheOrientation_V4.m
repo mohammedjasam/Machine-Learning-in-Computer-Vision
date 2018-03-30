@@ -36,7 +36,7 @@ Z = [];
 for ii = 1:2
     Z = [Z; X.^(ii)];
 end
-Z = [ones(1,size(Z,2)); Z];
+% Z = [ones(1,size(Z,2)); Z];
 
 phi_Z=pinv(Z')*w;   
 % prior_var_Z = var(phi_Z);
@@ -73,7 +73,7 @@ Z_t = [];
 for ii = 1:2
     Z_t = [Z_t; X_t.^(ii)];
 end
- Z_t = [ones(1,size(Z_t,2)); Z_t];
+%  Z_t = [ones(1,size(Z_t,2)); Z_t];
 
 D=size(Z_t,1);
 lamda=1000; % lamda range is:10000','1000','100','10','1','.1','.01','.001','.0001','.00001','.000001'
@@ -88,8 +88,8 @@ for i=1:size(files,1)
 end
 evaluation = evaluation/size(files,1);
 disp(evaluation);
-figure; plot(w_t,W,'r');
-
-
+figure; plot(w_t);
+hold on;
+plot(W)
 
 

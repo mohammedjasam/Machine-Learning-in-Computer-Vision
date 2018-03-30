@@ -1,5 +1,4 @@
 %% Preprocessing
-
 % Clear Everything
 clc;
 clear;
@@ -18,9 +17,8 @@ TestingPath = 'testing\';
 % Calculating Phi to Infer Rotation of the Image
 phi1 = pinv(XTrain') * WTrain;
 
-
-
 %% Task 1: Linear Regression
+TaskName1 = 'Linear Regression';
 
 % Inference of Rotation Angle on Testing Data
 Inference1 = XTest' * phi1;
@@ -29,23 +27,22 @@ Inference1 = XTest' * phi1;
 LinearRegressionResult = sum(abs(Inference1(:) - GT(:)))/size(GT, 1);
 
 % Displaying Linear Regression Result
-fprintf('Linear Regression: %f\n', LinearRegressionResult);
+fprintf('%s: %f\n', TaskName1, LinearRegressionResult);
 
 % Graph
-draw(GT, Inference1, 'Linear Regression');
-
-
+draw(GT, Inference1, TaskName1);
 
 %% Task 2: Feature Selection to reduce the Dimensionality for faster computation
+TaskName2 = 'Feature Selection';
 
-% Copying vars
+% Copying Variables from Earlier Code
 WTrain2 = WTrain;
 
 % Calculating Variance on Training Data
 TrainingVariance = var(XTrain, 0, 2);
 
 % Threshold value to reduce the number of values
-Threshold = 40;
+Threshold = 100;
 
 % Selecting Features in Training Data
 XTrain2 = XTrain(TrainingVariance > Threshold, :);
@@ -63,16 +60,15 @@ Inference2 = XTest2' * phi2;
 FeatureSelection = sum(abs(Inference2(:) - GT(:)))/size(GT, 1);
 
 % Displaying Linear Regression Result
-fprintf('Feature Selection: %f\n', FeatureSelection);
+fprintf('%s: %f\n', TaskName2, FeatureSelection);
 
 % Graph
-draw(GT, Inference2, 'LR with Feature Selection');
+draw(GT, Inference2, TaskName2);
 
+%% Task 3: Bayesian Solution based on Linear Regression and Feature Selection
+TaskName3 = 'Bayesian Solution';
 
-
-%% Task 3: Bayesian Solution based on Linear Regression and Selected Features
-
-% Copying Variables from Earlier Code to Eliminate Confusion
+% Copying Variables from Earlier Code
 XTrain3 = XTrain2; % Using the Feature Selected Training Data
 WTrain3 = WTrain; % Using the original W
 XTest3 = XTest2; % Using the Feature Selected Testing Data
@@ -87,12 +83,46 @@ VarPrior = var(phi3);
 BayesianSolution = sum(abs(Inference3(:) - GT(:)))/size(GT,1);
 
 % Displaying Linear Regression Result
-fprintf('Bayesian Solution: %f\n', BayesianSolution);
+fprintf('%s: %f\n', TaskName3, BayesianSolution);
 
 % Graph
 draw(GT, Inference3, 'Bayesian Solution');
 
+%% Task 4: Non-Linear Regression with Regularization and Feature Selection
+TaskName4 = 'Non Linear Solution';
 
+% Copying Variable from Earlier Code
+XTrain4 = XTrain2;
+XTest4 = XTest2;
+WTrain4 = WTrain;
+VarianceTrain4 = VarianceTrain3;
 
-%% Task 4: Non-Linear Regression with Regularization
+Lambda = VarianceTrain4 / var(phi3);
+
+% Select the Number of Polynomials
+n = 2;
+
+% Creating the Z Train matrix
+ZTrain = [];
+ZTest = [];
+for i = 1 : n
+    NewXTrain = XTrain4 .^ i;
+    ZTrain = [ZTrain; NewXTrain];
+    NewXTest = XTest4 .^ i;
+    ZTest = [ZTest; NewXTest];
+end
+
+phi4 = (ZTrain * ZTrain' + Lambda * eye(size(ZTrain, 1))) \ ZTrain * WTrain2;
+Inference4 = phi4' * ZTest;
+
+% Inference of Rotation Angle on Testing Data
+NonLinearSolution = sum(abs(Inference4(:) - GT(:)))/size(GT,1);
+
+fprintf('%s: %f\n', TaskName4, NonLinearSolution);
+
+% Graph
+draw(GT, Inference4, TaskName4);
+
+%% Task 5: Dual Non Linear Regression with Regularization and without Feature Selection
+TaskName5 = 'Dual Non-L.R.';
 

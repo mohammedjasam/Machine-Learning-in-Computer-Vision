@@ -110,14 +110,14 @@ Eval_Regu = sum(abs(w_infer_reg(:) - Gr_truth(:)))/size(Gr_truth,1);
 %Based on the selected features, Implement the nonlinear regression 
 %(e.g., polynomial regression) using the regularization
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+asdsd = 1;
 [D,N] = size(X_new);
 d = 2; %change the value of d to the desired number of polynomial powers 
 
 Z = zTransform(d, D, N, X_new);
 
-
-phi_reg_nonLinear = (Z*Z' + lambda*eye(size(Z,1)))\(Z*w);
+abc = Z*Z';
+phi_reg_nonLinear = (abc + lambda*eye(size(Z,1)))\(Z*w);
 
 [D,N] = size(X_new_test);
 Z_test = zTransform(d,D,N,X_new_test);
@@ -126,7 +126,6 @@ w_infer_nonLinear = phi_reg_nonLinear'*Z_test;
 
 hold on
 plot(w_infer_nonLinear)
-
 Eval_NonL = sum(abs(w_infer_nonLinear(:) - Gr_truth(:)))/size(Gr_truth,1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

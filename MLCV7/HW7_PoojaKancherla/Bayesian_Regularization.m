@@ -69,14 +69,14 @@ num_train = size(X_train_temp, 2); % Number of training images
 dim_train = size(X_train_temp, 1) - 1; % Dimensionality of the training images
 num_test = size(X_test_temp,2); % Number of training images
 
-% Calculating mean
+% Calculating mean for train data
 temp = 0;
 for i = 1 : size(w_train, 1)
     temp = temp + w_train(i);
 end
 mean_train = temp / num_train;
 
-% Calculating variance
+% Calculating variance for train data
 temp = 0;
 variance_train = 0;
 for i = 1 : size(w_train, 1)
@@ -86,7 +86,7 @@ for i = 1 : size(w_train, 1)
 end
 variance_train = variance_train / num_train;
 
-% calculating the min value for variance
+% Calculating the min value for variance
 variance = fminbnd (@(variance) calc_cost (variance, X_train_temp, num_train, w_train, var(phi)), 0, variance_train);
 
 % Calculating A inverse
@@ -100,21 +100,19 @@ else
     A_inverse = inv ((X_train_temp*X_train_temp') ./ variance + eye(dim_train+1) ./ var(phi));
 end
 
-% Compute the mean for each test example.
+% Calculating the mean for test data
 temp = X_test_temp' * A_inverse;
 mean_test = (temp * X_train_temp * w_train) ./ variance;
 
-% Compute the variance for each test example.    
+% Calculating the variance for test data
 variance_test = repmat(variance, num_train, 1);
 for i = 1 : num_train
     variance_test(i) = variance_test(i) + temp(i,:) * X_test_temp(:, i);
 end
 
-
-%% Inferring the rotation on test files
+%% Inferring the rotation on test files and calculating the diff
 w_inferred = mean_test;
 
-%% Calculating the diff
 diff_sum = 0;
 for i = 1 : size(testing_files, 1) - 2
    diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));

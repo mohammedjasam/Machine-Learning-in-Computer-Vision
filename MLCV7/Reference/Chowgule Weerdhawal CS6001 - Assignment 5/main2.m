@@ -50,10 +50,10 @@ w_test_hat_gt=w_test_hat./(pi*pi);
 w_train_gt=w_train/(pi*pi);
 w_test_gt=w_test/(pi*pi);
 
-train_error=norm(w_train_hat_gt-w_train_gt,2);
-test_error=norm(w_test_hat_gt-w_test_gt,2);
-deviation=abs((train_error-test_error)/size(X_test,2));
-return
+train_error2=norm(w_train_hat_gt-w_train_gt,2)
+test_error2=norm(w_test_hat_gt-w_test_gt,2)
+deviation2=abs((train_error-test_error)/size(X_test,2))
+
 figure('Name','Original');
 plot(w_test_hat_gt)
 hold on
@@ -73,9 +73,9 @@ w_test_hat_gt=w_test_hat./(pi*pi);
 w_train_gt=w_train/(pi*pi);
 w_test_gt=w_test/(pi*pi);
 
-train_error=norm(w_train_hat_gt-w_train_gt,2)
-test_error=norm(w_test_hat_gt-w_test_gt,2)
-deviation=abs((train_error-test_error)/size(X_test,2))
+train_error3=norm(w_train_hat_gt-w_train_gt,2)
+test_error3=norm(w_test_hat_gt-w_test_gt,2)
+deviation3=abs((train_error-test_error)/size(X_test,2))
 
 figure('Name','Regularized');
 
@@ -88,31 +88,33 @@ legend('Inference','Ground Truth')
 %% Polynomial
 lambda=100;
 X_train_poly=[];
-for i=1:size(X_train,2)
-   X_train_poly=[X_train_poly;ones(length(X_train),1)';X_train(:,i)';X_train(:,i)'.^2]; 
+
+for i = 1 : size(X_train, 2)
+   X_train_poly=[X_train_poly; ones(length(X_train),1)'; X_train(:,i)'; X_train(:,i)'.^2]; 
 end
 
 w_train_poly=[];
 w_test_poly=[];
+
 for i=1:length(w_train)
    w_train_poly=[w_train;w_train;w_train];
    w_test_poly=[w_test;w_test;w_test];
 end
 
-phi_hat_poly=(X_train_poly'*X_train_poly+0.8*eye(length(X_train)));
-phi_hat_poly=phi_hat_poly\(X_train_poly'*w_train_poly);
+phi_hat_poly = (X_train_poly' * X_train_poly + 0.8 * eye(length(X_train)));
+phi_hat_poly = phi_hat_poly\(X_train_poly'*w_train_poly);
 
-w_train_hat=X_train'*phi_hat_poly;
-w_test_hat=X_test'*phi_hat_poly;
+w_train_hat = X_train' * phi_hat_poly;
+w_test_hat = X_test' * phi_hat_poly;
 
 w_train_hat_gt=w_train_hat./(pi*pi);
 w_test_hat_gt=w_test_hat./(pi*pi);
 w_train_gt=w_train/(pi*pi);
 w_test_gt=w_test/(pi*pi);
 
-train_error=norm(w_train_hat_gt-w_train_gt,2)
-test_error=norm(w_test_hat_gt-w_test_gt,2)
-deviation=abs((train_error-test_error)/size(X_test,2))
+train_error4=norm(w_train_hat_gt-w_train_gt,2)
+test_error4=norm(w_test_hat_gt-w_test_gt,2)
+deviation4=abs((train_error-test_error)/size(X_test,2))
 
 figure('Name','Polynomial Regression');
 
@@ -138,9 +140,9 @@ w_test_hat_gt=w_test_hat./(pi*pi);
 w_train_gt=w_train/(pi*pi);
 w_test_gt=w_test/(pi*pi);
 
-train_error=norm(w_train_hat_gt-w_train_gt,2)
-test_error=norm(w_test_hat_gt-w_test_gt,2)
-deviation=abs((train_error-test_error)/size(X_test,2))
+train_error5=norm(w_train_hat_gt-w_train_gt,2)
+test_error5=norm(w_test_hat_gt-w_test_gt,2)
+deviation5=abs((train_error-test_error)/size(X_test,2))
 
 figure('Name','Duel linear');
 

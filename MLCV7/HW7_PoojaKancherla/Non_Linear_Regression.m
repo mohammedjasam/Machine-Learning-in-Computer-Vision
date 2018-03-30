@@ -63,20 +63,19 @@ X_test_temp = X_test .* temp;
 X_test_temp(all(X_test_temp == 0, 2), :) = [];
 X_test_temp = [ones_row; X_test_temp]; % Adding the 1s row at the beginning
 
-
-%% Bayesian Linear Regression
+%% Non Linear Regression
 num_train = size(X_train_temp, 2); % Number of training images
 dim_train = size(X_train_temp, 1) - 1; % Dimensionality of the training images
 num_test = size(X_test_temp,2); % Number of training images
 
-% Calculating mean
+% Calculating mean for train data
 temp = 0;
 for i = 1 : size(w_train, 1)
     temp = temp + w_train(i);
 end
 mean_train = temp / num_train;
 
-% Calculating variance
+% Calculating variance for train data
 temp = 0;
 variance_train = 0;
 for i = 1 : size(w_train, 1)
@@ -86,43 +85,23 @@ for i = 1 : size(w_train, 1)
 end
 variance_train = variance_train / num_train;
 
-% calculating the min value for variance
+% Calculating the min value for variance
 variance = fminbnd (@(variance) calc_cost (variance, X_train_temp, num_train, w_train, var(phi)), 0, variance_train);
 
-% Calculating A inverse
-A_inverse = 0;
+% Polynomial power
+pow = 2;
 
-% if dim_train < num_train
-%     A_inverse = inv ((X*X') ./ variance + eye(dim_train + 1) ./ var(phi));
-% else
-%     temp = inv(X_train_temp' * X_train_temp + (variance/variance_train)*eye(num_train)) * X_train_temp';
-%     A_inverse = eye(dim_train + 1) - X_train_temp * temp;
-%     A_inverse = var(phi) * A_inverse;
-% end
+% Constructing the Z matrices
+Z_train = gen_Z(pow, X_train_temp);
+Z_test = gen_Z(pow, X_test_temp);
 
-A_inv = 0;    
-if D < I
-    A_inv = inv ((X_train_temp*X_train_temp') ./ variance + eye(dim_train+1) ./ var(phi));
-else    
-    A_inv = eye(dim_train+1) - X*inv(X'*X + (var/var(phi))*eye(I))*X';
-    A_inv = var(phi) * A_inv;
-end
+% Calculating lamda and phi
+lambda = variance / var(phi);
+phi_nlr = (Z_train * Z_train' + lambda * eye(size(Z_train, 1))) \ Z_train * w_train;
 
-% Compute the mean for each test example.
-temp = X_test_temp' * A_inverse;
-mean_test = (temp * X_train_temp * w_train) ./ variance;
+%% Inferring the rotation on test files and calculating the diff
+w_inferred = phi_nlr' * Z_test;
 
-% Compute the variance for each test example.    
-variance_test = repmat(variance, num_train, 1);
-for i = 1 : num_train
-    variance_test(i) = variance_test(i) + temp(i,:) * X_test_temp(:, i);
-end
-
-
-%% Inferring the rotation on test files
-w_inferred = mean_test;
-
-%% Calculating the diff
 diff_sum = 0;
 for i = 1 : size(testing_files, 1) - 2
    diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
@@ -135,4 +114,4 @@ plot(w_inferred);
 hold on
 plot(ground_truth);
 legend('Inference','Ground Truth');
-title('Bayesian using Regularization');
+title('Non Linear Regression with Regularization');

@@ -1,7 +1,7 @@
-function result = lr()
+function [result, ground_truth] = Linear_Regression()
     %% Clear
-    clc; 
-    clear all; 
+%     clc; 
+%     clear all; 
     close all;
 
     %% Data
@@ -73,5 +73,5 @@ function result = lr()
     hold on
     plot(ground_truth);
     legend('Inference','Ground Truth');
-    title('Linear Regression');
+    title(sprintf('Linear Regression: %f', diff_sum));
 result = w_inferred;

@@ -1,7 +1,7 @@
-function result = blr()
+function [result, ground_truth] = Bayesian_Regularization()
     %% Clear
-    clc; 
-    clear all; 
+%     clc; 
+%     clear all; 
     close all;
 
     %% Data
@@ -126,5 +126,5 @@ function result = blr()
     hold on
     plot(ground_truth);
     legend('Inference','Ground Truth');
-    title('Bayesian using Regularization');
+    title(sprintf('Bayesian Solution: %f', diff_sum));
 result = w_inferred;

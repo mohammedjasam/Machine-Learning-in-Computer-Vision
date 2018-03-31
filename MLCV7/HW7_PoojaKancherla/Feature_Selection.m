@@ -1,7 +1,7 @@
-function result = lrfs()
+function [result, ground_truth] = Feature_Selection()
     %% Clear
-    clc; 
-    clear all; 
+%     clc; 
+%     clear all; 
     close all;
 
     %% Data
@@ -82,4 +82,5 @@ function result = lrfs()
     plot(ground_truth);
     legend('Inference','Ground Truth');
     title('Feature Selection');
+    title(sprintf('Feature Selection: %f', diff_sum));
 result = w_inferred;

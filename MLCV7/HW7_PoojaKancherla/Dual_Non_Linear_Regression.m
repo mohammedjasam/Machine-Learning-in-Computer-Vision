@@ -1,7 +1,7 @@
-function result = dnlr()
+function [result, ground_truth] = Dual_Non_Linear_Regression()
     %% Clear
-    clc; 
-    clear all; 
+%     clc; 
+%     clear all; 
     close all;
 
     %% Data
@@ -122,5 +122,5 @@ function result = dnlr()
     hold on
     plot(ground_truth);
     legend('Inference','Ground Truth');
-    title('Linear Regression');
+    title(sprintf('Dual Non Linear Regression: %f', diff_sum));
 result = w_inferred;

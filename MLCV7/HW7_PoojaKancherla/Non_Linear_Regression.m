@@ -1,117 +1,119 @@
-%% Clear
-clc; 
-clear all; 
-close all;
+function result = nlr()
+    %% Clear
+    clc; 
+    clear all; 
+    close all;
 
-%% Data
-training_directory = 'training\';
-testing_directory = 'testing\';
+    %% Data
+    training_directory = 'training\';
+    testing_directory = 'testing\';
 
-%% Training
-training_files = dir(training_directory);
+    %% Training
+    training_files = dir(training_directory);
 
-w_train = []; % Given w
-X_train = [];
+    w_train = []; % Given w
+    X_train = [];
 
-% Creating the image column matrix
-for i = 3 : size(training_files)
-    w_train = [w_train; str2double(training_files(i).name(1:4))]; % Extracting the rotation angle from filename
-    image = imread([training_directory training_files(i).name]);
-    image = image(:,:,1);
-    X_train = [X_train image(:)];
-end
+    % Creating the image column matrix
+    for i = 3 : size(training_files)
+        w_train = [w_train; str2double(training_files(i).name(1:4))]; % Extracting the rotation angle from filename
+        image = imread([training_directory training_files(i).name]);
+        image = image(:,:,1);
+        X_train = [X_train image(:)];
+    end
 
-X_train = double(X_train);
-ones_row = ones(1, size(X_train, 2));
-var_mat = var(X_train, 0, 2);
-temp = var_mat > 100;
-X_train_temp = X_train .* temp;
-X_train_temp(all(X_train_temp == 0, 2), :) = [];
-X_train_temp = [ones_row; X_train_temp]; % Adding the 1s row at the beginning
+    X_train = double(X_train);
+    ones_row = ones(1, size(X_train, 2));
+    var_mat = var(X_train, 0, 2);
+    temp = var_mat > 100;
+    X_train_temp = X_train .* temp;
+    X_train_temp(all(X_train_temp == 0, 2), :) = [];
+    X_train_temp = [ones_row; X_train_temp]; % Adding the 1s row at the beginning
 
-%% Calculating phi to learn parameters
-M = X_train_temp * X_train_temp';
-[r,~] = size(M);
-M(1:r+1:end) = M(1:r+1:end) + 0.001; % Adding a small value to the diagonal to avoid singularity
+    %% Calculating phi to learn parameters
+    M = X_train_temp * X_train_temp';
+    [r,~] = size(M);
+    M(1:r+1:end) = M(1:r+1:end) + 0.001; % Adding a small value to the diagonal to avoid singularity
 
-X_train_new = M;
+    X_train_new = M;
 
-z = inv(X_train_new);
-y = X_train_temp * w_train;
-phi = z * y;
+    z = inv(X_train_new);
+    y = X_train_temp * w_train;
+    phi = z * y;
 
 
-%% Testing
-testing_files = dir(testing_directory);
+    %% Testing
+    testing_files = dir(testing_directory);
 
-ground_truth = []; % Given w
-X_test = [];
+    ground_truth = []; % Given w
+    X_test = [];
 
-% Creating the image column matrix
-for i = 3 : size(testing_files)
-    ground_truth = [ground_truth; str2double(testing_files(i).name(1:4))]; % Extracting the rotation angle from filename
-    image = imread([testing_directory testing_files(i).name]);
-    image = image(:,:,1);
-    X_test = [X_test image(:)];
-end
+    % Creating the image column matrix
+    for i = 3 : size(testing_files)
+        ground_truth = [ground_truth; str2double(testing_files(i).name(1:4))]; % Extracting the rotation angle from filename
+        image = imread([testing_directory testing_files(i).name]);
+        image = image(:,:,1);
+        X_test = [X_test image(:)];
+    end
 
-X_test = double(X_test);
-ones_row = ones(1, size(X_test, 2));
-var_mat = var(X_train, 0, 2);
-temp = var_mat > 100;
-X_test_temp = X_test .* temp;
-X_test_temp(all(X_test_temp == 0, 2), :) = [];
-X_test_temp = [ones_row; X_test_temp]; % Adding the 1s row at the beginning
+    X_test = double(X_test);
+    ones_row = ones(1, size(X_test, 2));
+    var_mat = var(X_train, 0, 2);
+    temp = var_mat > 100;
+    X_test_temp = X_test .* temp;
+    X_test_temp(all(X_test_temp == 0, 2), :) = [];
+    X_test_temp = [ones_row; X_test_temp]; % Adding the 1s row at the beginning
 
-%% Non Linear Regression
-num_train = size(X_train_temp, 2); % Number of training images
-dim_train = size(X_train_temp, 1) - 1; % Dimensionality of the training images
-num_test = size(X_test_temp,2); % Number of training images
+    %% Non Linear Regression
+    num_train = size(X_train_temp, 2); % Number of training images
+    dim_train = size(X_train_temp, 1) - 1; % Dimensionality of the training images
+    num_test = size(X_test_temp,2); % Number of training images
 
-% Calculating mean for train data
-temp = 0;
-for i = 1 : size(w_train, 1)
-    temp = temp + w_train(i);
-end
-mean_train = temp / num_train;
+    % Calculating mean for train data
+    temp = 0;
+    for i = 1 : size(w_train, 1)
+        temp = temp + w_train(i);
+    end
+    mean_train = temp / num_train;
 
-% Calculating variance for train data
-temp = 0;
-variance_train = 0;
-for i = 1 : size(w_train, 1)
-    temp = w_train(i) - mean_train;
-    temp = temp ^ 2;
-    variance_train = variance_train + temp;
-end
-variance_train = variance_train / num_train;
+    % Calculating variance for train data
+    temp = 0;
+    variance_train = 0;
+    for i = 1 : size(w_train, 1)
+        temp = w_train(i) - mean_train;
+        temp = temp ^ 2;
+        variance_train = variance_train + temp;
+    end
+    variance_train = variance_train / num_train;
 
-% Calculating the min value for variance
-variance = fminbnd (@(variance) calc_cost (variance, X_train_temp, num_train, w_train, var(phi)), 0, variance_train);
+    % Calculating the min value for variance
+    variance = fminbnd (@(variance) calc_cost (variance, X_train_temp, num_train, w_train, var(phi)), 0, variance_train);
 
-% Polynomial power
-pow = 2;
+    % Polynomial power
+    pow = 2;
 
-% Constructing the Z matrices
-Z_train = gen_Z(pow, X_train_temp);
-Z_test = gen_Z(pow, X_test_temp);
+    % Constructing the Z matrices
+    Z_train = gen_Z(pow, X_train_temp);
+    Z_test = gen_Z(pow, X_test_temp);
 
-% Calculating lamda and phi
-lambda = variance / var(phi);
-phi_nlr = (Z_train * Z_train' + lambda * eye(size(Z_train, 1))) \ Z_train * w_train;
+    % Calculating lamda and phi
+    lambda = variance / var(phi);
+    phi_nlr = (Z_train * Z_train' + lambda * eye(size(Z_train, 1))) \ Z_train * w_train;
 
-%% Inferring the rotation on test files and calculating the diff
-w_inferred = phi_nlr' * Z_test;
+    %% Inferring the rotation on test files and calculating the diff
+    w_inferred = phi_nlr' * Z_test;
 
-diff_sum = 0;
-for i = 1 : size(testing_files, 1) - 2
-   diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
-end
-diff_sum = diff_sum / (size(testing_files, 1) - 2);
-disp(diff_sum);
+    diff_sum = 0;
+    for i = 1 : size(testing_files, 1) - 2
+       diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
+    end
+    diff_sum = diff_sum / (size(testing_files, 1) - 2);
+    disp(diff_sum);
 
-%% Visualization
-plot(w_inferred);
-hold on
-plot(ground_truth);
-legend('Inference','Ground Truth');
-title('Non Linear Regression with Regularization');
+    %% Visualization
+    plot(w_inferred);
+    hold on
+    plot(ground_truth);
+    legend('Inference','Ground Truth');
+    title('Non Linear Regression with Regularization');
+result = w_inferred;

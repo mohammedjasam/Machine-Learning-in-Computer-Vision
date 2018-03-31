@@ -42,7 +42,7 @@ WTrain2 = WTrain;
 TrainingVariance = var(XTrain, 0, 2);
 
 % Threshold value to reduce the number of values
-Threshold = 100;
+Threshold = 40;
 
 % Selecting Features in Training Data
 XTrain2 = XTrain(TrainingVariance > Threshold, :);
@@ -59,7 +59,7 @@ Inference2 = XTest2' * phi2;
 % Evaluation of accuracy
 FeatureSelection = sum(abs(Inference2(:) - GT(:)))/size(GT, 1);
 
-% Displaying Linear Regression Result
+% Displaying Linear Regression with Feature Selection Result
 fprintf('%s: %f\n', TaskName2, FeatureSelection);
 
 % Graph
@@ -77,19 +77,20 @@ phi3 = phi2; % Using the Phi after Feature Selection
 % Variance in Phi
 VarPrior = var(phi3);
 
-[Inference3, VarianceTest3, VarianceTrain3, AInverse] = fit_blr (XTrain3, WTrain3, VarPrior, XTest3);
-
 % Inference of Rotation Angle on Testing Data
+[Inference3, VarianceTest3, VarianceTrain3, AInverse] = compute('BLR', XTrain3, WTrain3, VarPrior, XTest3);
+
+% Evaluation of accuracy
 BayesianSolution = sum(abs(Inference3(:) - GT(:)))/size(GT,1);
 
-% Displaying Linear Regression Result
+% Displaying Bayesian Result
 fprintf('%s: %f\n', TaskName3, BayesianSolution);
 
 % Graph
 draw(GT, Inference3, 'Bayesian Solution');
 
 %% Task 4: Non-Linear Regression with Regularization and Feature Selection
-TaskName4 = 'Non Linear Solution';
+TaskName4 = 'Non Linear Regression';
 
 % Copying Variable from Earlier Code
 XTrain4 = XTrain2;
@@ -102,7 +103,7 @@ Lambda = VarianceTrain4 / var(phi3);
 % Select the Number of Polynomials
 n = 2;
 
-% Creating the Z Train matrix
+% Creating the Z Train and Z Test
 ZTrain = [];
 ZTest = [];
 for i = 1 : n
@@ -112,12 +113,16 @@ for i = 1 : n
     ZTest = [ZTest; NewXTest];
 end
 
+% Calculating Phi to Infer Rotation of the Image
 phi4 = (ZTrain * ZTrain' + Lambda * eye(size(ZTrain, 1))) \ ZTrain * WTrain2;
-Inference4 = phi4' * ZTest;
 
 % Inference of Rotation Angle on Testing Data
+Inference4 = phi4' * ZTest;
+
+% Evaluation of accuracy
 NonLinearSolution = sum(abs(Inference4(:) - GT(:)))/size(GT,1);
 
+% Displaying Non-Linear Regression Result
 fprintf('%s: %f\n', TaskName4, NonLinearSolution);
 
 % Graph
@@ -125,4 +130,25 @@ draw(GT, Inference4, TaskName4);
 
 %% Task 5: Dual Non Linear Regression with Regularization and without Feature Selection
 TaskName5 = 'Dual Non-L.R.';
+
+% Inference of Rotation Angle on Testing Data
+[Inference5, var_test] = compute('DNLR', XTrain, WTrain, var(phi1), XTest);
+
+% Computing the 
+DualNonLinearRegression = sum(abs(Inference5(:) - GT(:)))/size(GT,1);
+
+% Displaying Dual Non-Linear Regression Result
+fprintf('%s: %f\n', TaskName5, DualNonLinearRegression);
+
+% Graph
+draw(GT, Inference5, TaskName5);
+
+
+
+
+
+
+
+
+
 

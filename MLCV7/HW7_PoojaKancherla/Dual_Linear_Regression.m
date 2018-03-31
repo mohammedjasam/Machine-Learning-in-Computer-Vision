@@ -1,4 +1,4 @@
-function result = blr()
+function result = dnlr()
     %% Clear
     clc; 
     clear all; 
@@ -14,6 +14,7 @@ function result = blr()
     w_train = []; % Given w
     X_train = [];
 
+
     % Creating the image column matrix
     for i = 3 : size(training_files)
         w_train = [w_train; str2double(training_files(i).name(1:4))]; % Extracting the rotation angle from filename
@@ -24,23 +25,27 @@ function result = blr()
 
     X_train = double(X_train);
     ones_row = ones(1, size(X_train, 2));
-    var_mat = var(X_train, 0, 2);
-    temp = var_mat > 100;
-    X_train_temp = X_train .* temp;
-    X_train_temp(all(X_train_temp == 0, 2), :) = [];
-    X_train_temp = [ones_row; X_train_temp]; % Adding the 1s row at the beginning
+    X_train = [ones_row; X_train]; % Adding the 1s row at the beginning
 
     %% Calculating phi to learn parameters
-    M = X_train_temp * X_train_temp';
-    [r,~] = size(M);
-    M(1:r+1:end) = M(1:r+1:end) + 0.001; % Adding a small value to the diagonal to avoid singularity
+    % M = X_train * X_train';
+    % [r,~] = size(M);
+    % M(1:r+1:end) = M(1:r+1:end) + 0.001; % Adding a small value to the diagonal to avoid singularity
+    % 
+    % X_train_new = M;
+    % 
+    % z = inv(X_train_new);
+    % y = X_train * w_train;
+    % phi = z * y;
 
-    X_train_new = M;
+    % Since DxD is huge we do the opposite to get IxI
+    M = (X_train' * X_train);
 
-    z = inv(X_train_new);
-    y = X_train_temp * w_train;
-    phi = z * y;
+    % Calculating Psi
+    psi =  M \ w_train;
 
+    % Calculating Phi
+    phi = X_train * psi;
 
     %% Testing
     testing_files = dir(testing_directory);
@@ -58,17 +63,14 @@ function result = blr()
 
     X_test = double(X_test);
     ones_row = ones(1, size(X_test, 2));
-    var_mat = var(X_train, 0, 2);
-    temp = var_mat > 100;
-    X_test_temp = X_test .* temp;
-    X_test_temp(all(X_test_temp == 0, 2), :) = [];
-    X_test_temp = [ones_row; X_test_temp]; % Adding the 1s row at the beginning
+    X_test = [ones_row; X_test]; % Adding the 1s row at the beginning
 
+    %% Dual Non-Linear Regression
+    num_train = size(X_train, 2); % Number of training images
+    num_test = size(X_test,2); % Number of training images
 
-    %% Bayesian Linear Regression
-    num_train = size(X_train_temp, 2); % Number of training images
-    dim_train = size(X_train_temp, 1) - 1; % Dimensionality of the training images
-    num_test = size(X_test_temp,2); % Number of training images
+    t = w_train - ((X_train' * X_train) * psi);
+    variance_temp = ((t)' * t) \ num_train;
 
     % Calculating mean for train data
     temp = 0;
@@ -88,32 +90,26 @@ function result = blr()
     variance_train = variance_train / num_train;
 
     % Calculating the min value for variance
-    variance = fminbnd (@(variance) calc_cost (variance, X_train_temp, num_train, w_train, var(phi)), 0, variance_train);
+    variance = fminbnd (@(variance) calc_cost (variance, X_train, num_train, w_train, var(phi)), 0, variance_train);
 
-    % Calculating A inverse
-    A_inverse = 0;    
-    if dim_train > num_train
-        M = X_train_temp' * X_train_temp + (variance/var(phi))*eye(num_train);
-        inv_train_temp = inv(M) * X_train_temp';
-        A_inverse = eye(dim_train+1) - X_train_temp * inv_train_temp;
-        A_inverse = var(phi) * A_inverse;    
-    else    
-        A_inverse = inv ((X_train_temp*X_train_temp') ./ variance + eye(dim_train+1) ./ var(phi));
-    end
+    lambda = variance / var(phi);
+    % lambda = 100000;
+    X_test_var = var(X_test, 0, 2);
 
-    % Calculating the mean for test data
-    temp = X_test_temp' * A_inverse;
-    mean_test = (temp * X_train_temp * w_train) ./ variance;
+    % lamda=1; % lamda range is:10000','1000','100','10','1','.1','.01','.001','.0001','.00001','.000001'
+    % Compute A_inv.   
+    A = ((X_train' * X_train)*(X_train' * X_train)) + (lambda * eye(num_train));
+    A_inv = inv(A);
 
-    % Calculating the variance for test data
-    variance_test = repmat(variance, num_train, 1);
-    for i = 1 : num_train
-        variance_test(i) = variance_test(i) + temp(i,:) * X_test_temp(:, i);
-    end
+    psi_test = A_inv * X_train' * X_train * w_train;
+    phi_test = X_train * psi_test;
 
-    %% Inferring the rotation on test files and calculating the diff
-    w_inferred = mean_test;
+    w_inferred = phi_test' * X_test;
 
+    %% Inferring the rotation on test files
+    w_inferred = phi' * X_test;
+
+    %% Calculating the diff
     diff_sum = 0;
     for i = 1 : size(testing_files, 1) - 2
        diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
@@ -126,5 +122,5 @@ function result = blr()
     hold on
     plot(ground_truth);
     legend('Inference','Ground Truth');
-    title('Bayesian using Regularization');
+    title('Linear Regression');
 result = w_inferred;

@@ -139,15 +139,17 @@ Eval_NonL = sum(abs(w_infer_nonLinear(:) - Gr_truth(:)))/size(Gr_truth,1);
 %(X'*X) instead. Now this is represented as psi.
 
 
+asad = var(phi)
 
-[w_dual_infer, var_test] = fit_dr (X, w, var(phi), X_test);
-% psi_dual_reg = (X'*X*X'*X + lambda*eye(size(X,2)))\X'*X*w;
-% phi_dual_reg = X*psi_dual_reg;
-% w_dual_infer = phi_dual_reg'*X_test;
+% [w_dual_infer, var_test] = fit_dr (X, w, var(phi), X_test);
+psi_dual_reg = (X'*X*X'*X + lambda*eye(size(X,2)))\X'*X*w;
+phi_dual_reg = X*psi_dual_reg;
+w_dual_infer = phi_dual_reg'*X_test;
 hold on
 plot(w_dual_infer)
 
-legend('Ground Truth', 'Lin Reg','Regul feature selection', 'Non-linear feature selection','Dual lin Reg')
+legend('Ground Truth', 'Lin Reg','Regul feature selection', ...
+        'Non-linear feature selection','Dual lin Reg')
 Eval_Dual = sum(abs(w_dual_infer(:) - Gr_truth(:)))/size(Gr_truth,1);
 
 xlabel('Ground Truth rotations of the ring in the test images');

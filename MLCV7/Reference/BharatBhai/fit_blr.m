@@ -23,29 +23,31 @@ function [mu_test, var_test, var, A_inv] = fit_blr (X, w, var_prior, X_test)
     I = size(X,2);
     I_test = size(X_test,2);
     
-    % Compute the variance. Use the range [0,variance of world values].
-    % Constrain var to be positive, by expressing it as var=sqrt(var)^2,
-    % that is, the standard deviation squared.
-    mu_world = sum(w) / I;
-    var_world = sum((w - mu_world) .^ 2) / I;
-    var = fminbnd (@(var) fit_blr_cost (var, X, w, var_prior), 0, var_world);
-    
-    % Compute A_inv.    
-    A_inv = 0;    
-    if D < I
-        A_inv = inv ((X*X') ./ var + eye(D+1) ./ var_prior);
-    else    
-        A_inv = eye(D+1) - X*inv(X'*X + (var/var_prior)*eye(I))*X';
-        A_inv = var_prior * A_inv;
-    end
+   
+        % Compute the variance. Use the range [0,variance of world values].
+        % Constrain var to be positive, by expressing it as var=sqrt(var)^2,
+        % that is, the standard deviation squared.
+        mu_world = sum(w) / I;
+        var_world = sum((w - mu_world) .^ 2) / I;
+        var = fminbnd (@(var) fit_blr_cost (var, X, w, var_prior), 0, var_world);
 
-    % Compute the mean for each test example.
-    temp = X_test' * A_inv;
-    mu_test = (temp * X * w) ./ var;
-    
-    % Compute the variance for each test example.    
-    var_test = repmat(var,I_test,1);
-    for i = 1 : I_test
-        var_test(i) = var_test(i) + temp(i,:) * X_test(:,i);
-    end
+        % Compute A_inv.    
+        A_inv = 0;    
+        if D < I
+            A_inv = inv ((X*X') ./ var + eye(D+1) ./ var_prior);
+        else    
+            A_inv = eye(D+1) - X*inv(X'*X + (var/var_prior)*eye(I))*X';
+            A_inv = var_prior * A_inv;
+        end
+
+        % Compute the mean for each test example.
+        temp = X_test' * A_inv;
+        mu_test = (temp * X * w) ./ var;
+
+        % Compute the variance for each test example.    
+        var_test = repmat(var,I_test,1);
+        for i = 1 : I_test
+            var_test(i) = var_test(i) + temp(i,:) * X_test(:,i);
+        end
+   
 end

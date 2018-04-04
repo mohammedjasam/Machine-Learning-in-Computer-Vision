@@ -141,7 +141,9 @@ Eval_NonL = sum(abs(w_infer_nonLinear(:) - Gr_truth(:)))/size(Gr_truth,1);
 
 asad = var(phi)
 
-% [w_dual_infer, var_test] = fit_dr (X, w, var(phi), X_test);
+[w_dual_infer, var_test] = fit_dr (X, w, var(phi), X_test);
+hold on
+plot(w_dual_infer)
 psi_dual_reg = (X'*X*X'*X + lambda*eye(size(X,2)))\X'*X*w;
 phi_dual_reg = X*psi_dual_reg;
 w_dual_infer = phi_dual_reg'*X_test;

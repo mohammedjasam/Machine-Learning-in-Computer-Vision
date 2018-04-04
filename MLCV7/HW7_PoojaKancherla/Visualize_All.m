@@ -6,27 +6,52 @@ close all;
 
 %% Extract inferences from each method
 
-[lr, gt] = Linear_Regression();
-[fs, gt] = Feature_Selection();
-[blr, gt] = Bayesian_Regularization();
-[nlr, gt] = Non_Linear_Regression();
-[dnlr, gt] = Dual_Non_Linear_Regression();
+[msg1, lr, gt] = Linear_Regression();
+[msg2, fs, gt] = Feature_Selection();
+[msg3, blr, gt] = Bayesian_Regularization();
+[msg4, nlr, gt] = Non_Linear_Regression();
+[msg5, dnlr, gt] = Dual_Non_Linear_Regression();
+
+disp('Mean Absolute Error:');
+disp('----------------------------------------------------------')
+disp(sprintf('| 1. %s                        |', msg1));
+disp(sprintf('| 2. %s |', msg2));
+disp(sprintf('| 3. %s                  |', msg3));
+disp(sprintf('| 4. %s                    |', msg4));
+disp(sprintf('| 5. %s               |', msg5));
+disp('----------------------------------------------------------')
+
 
 close all;
-figure();
-plot(gt); 
-hold on;
-plot(lr);
-hold on;
-plot(fs);
-hold on;
-plot(blr);
-hold on;
-plot(nlr);
-hold on;
-plot(dnlr);
+diff = [];
+diff = [diff (lr - gt')' (fs - gt')' (blr - gt')' (nlr - gt')' (dnlr - gt')'];
 
+figure();
+plot(diff(:,1))
+hold on
+plot(diff(:,2))
+hold on
+plot(diff(:,3))
+hold on 
+plot(diff(:,4))
+hold on
+plot(diff(:,5))
+hold on
+plot(gt' - gt')
+
+title('Deviation Chart')
 legend('Ground Truth', 'Linear Regression', 'Feature Selection',...
         'Bayesian LR + FS', 'Non Linear Regression', 'Dual Non-LR');
-hold off;
-title('Ground Truth vs Various Methods');
+
+figure()
+bar(diff(:,1))
+hold on
+bar(diff(:,2))
+hold on
+bar(diff(:,3))
+hold on
+bar(diff(:,4))
+hold on
+bar(diff(:,5))
+hold on
+bar(gt' - gt')

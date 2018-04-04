@@ -1,4 +1,6 @@
 All 5 tasks are in separate files
+
+To execute the files follow these steps:
 1. Run Linear_Regression.m for Linear Regression
 2. Run Feature_Selection.m for Linear Regression with Feature Selection
 3. Run Bayesian_Regularization.m for Bayesian Solution for the selected features

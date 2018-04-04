@@ -1,8 +1,8 @@
-function [result, ground_truth] = Feature_Selection()
+function [print, result, ground_truth] = Feature_Selection()
     %% Clear
 %     clc; 
 %     clear all; 
-    close all;
+%     close all;
 
     %% Data
     training_directory = 'training\';
@@ -74,13 +74,20 @@ function [result, ground_truth] = Feature_Selection()
        diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
     end
     diff_sum = diff_sum / (size(testing_files, 1) - 2);
-    disp(diff_sum);
-
+    print = sprintf('Linear Regression with Feature Selection = %f', diff_sum);
+    
     %% Visualization
-    plot(w_inferred);
+    bar(w_inferred - ground_truth');
     hold on
+    bar(ground_truth' - ground_truth');    
+    legend('Inference','Ground Truth');
+    title(sprintf('Feature Selection: %f', diff_sum));
+    
+    figure();
+    plot(w_inferred);
+    hold on;
     plot(ground_truth);
     legend('Inference','Ground Truth');
-    title('Feature Selection');
     title(sprintf('Feature Selection: %f', diff_sum));
+    
 result = w_inferred;

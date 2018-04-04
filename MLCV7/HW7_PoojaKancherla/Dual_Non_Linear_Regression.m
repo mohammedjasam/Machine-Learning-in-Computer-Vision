@@ -1,8 +1,8 @@
-function [result, ground_truth] = Dual_Non_Linear_Regression()
+function [print, result, ground_truth] = Dual_Non_Linear_Regression()
     %% Clear
-%     clc; 
-%     clear all; 
-    close all;
+    %clc; 
+    %clear all; 
+%     close all;
 
     %% Data
     training_directory = 'training\';
@@ -69,8 +69,8 @@ function [result, ground_truth] = Dual_Non_Linear_Regression()
     num_train = size(X_train, 2); % Number of training images
     num_test = size(X_test,2); % Number of training images
 
-    t = w_train - ((X_train' * X_train) * psi);
-    variance_temp = ((t)' * t) \ num_train;
+%     t = w_train - ((X_train' * X_train) * psi);
+%     variance_temp = ((t)' * t) \ num_train;
 
     % Calculating mean for train data
     temp = 0;
@@ -93,21 +93,17 @@ function [result, ground_truth] = Dual_Non_Linear_Regression()
     variance = fminbnd (@(variance) calc_cost (variance, X_train, num_train, w_train, var(phi)), 0, variance_train);
 
     lambda = variance / var(phi);
-    % lambda = 100000;
     X_test_var = var(X_test, 0, 2);
 
-    % lamda=1; % lamda range is:10000','1000','100','10','1','.1','.01','.001','.0001','.00001','.000001'
     % Compute A_inv.   
-    A = ((X_train' * X_train)*(X_train' * X_train)) + (lambda * eye(num_train));
+    A = ((X_train' * X_train) * (X_train' * X_train)) + (lambda * eye(num_train));
     A_inv = inv(A);
 
-    psi_test = A_inv * X_train' * X_train * w_train;
-    phi_test = X_train * psi_test;
-
-    w_inferred = phi_test' * X_test;
-
+    psi_test = A_inv * (X_train' * X_train) * w_train;
+    phi_test = X_train * psi_test; 
+    
     %% Inferring the rotation on test files
-    w_inferred = phi' * X_test;
+    w_inferred = phi_test' * X_test;
 
     %% Calculating the diff
     diff_sum = 0;
@@ -115,12 +111,21 @@ function [result, ground_truth] = Dual_Non_Linear_Regression()
        diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
     end
     diff_sum = diff_sum / (size(testing_files, 1) - 2);
-    disp(diff_sum);
-
-    %% Visualization
-    plot(w_inferred);
+%     disp(sprintf('Dual Non Linear Regression = %f', diff_sum));
+    print = sprintf('Dual Non Linear Regression = %f', diff_sum);
+    
+    %% Visualization    
+    bar(w_inferred - ground_truth');
     hold on
-    plot(ground_truth);
+    bar(ground_truth' - ground_truth');    
     legend('Inference','Ground Truth');
     title(sprintf('Dual Non Linear Regression: %f', diff_sum));
+    
+    figure();
+    plot(w_inferred);
+    hold on;
+    plot(ground_truth); 
+    legend('Inference','Ground Truth');
+    title(sprintf('Dual Non Linear Regression: %f', diff_sum));
+    
 result = w_inferred;

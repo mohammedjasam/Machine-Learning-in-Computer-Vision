@@ -1,8 +1,8 @@
-function [result, ground_truth] = Non_Linear_Regression()
+function [print, result, ground_truth] = Non_Linear_Regression()
     %% Clear
 %     clc; 
 %     clear all; 
-    close all;
+%     close all;
 
     %% Data
     training_directory = 'training\';
@@ -65,15 +65,12 @@ function [result, ground_truth] = Non_Linear_Regression()
     X_test_temp = [ones_row; X_test_temp]; % Adding the 1s row at the beginning
 
     %% Non Linear Regression
-    num_train = size(X_train_temp, 2); % Number of training images
-    dim_train = size(X_train_temp, 1) - 1; % Dimensionality of the training images
-    num_test = size(X_test_temp,2); % Number of training images
-
     % Calculating mean for train data
     temp = 0;
     for i = 1 : size(w_train, 1)
         temp = temp + w_train(i);
     end
+    num_train = size(X_train_temp, 2); % Number of training images
     mean_train = temp / num_train;
 
     % Calculating variance for train data
@@ -108,12 +105,21 @@ function [result, ground_truth] = Non_Linear_Regression()
        diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
     end
     diff_sum = diff_sum / (size(testing_files, 1) - 2);
-    disp(diff_sum);
-
+%     disp(sprintf('Non Linear Regression = %f', diff_sum));
+    print = sprintf('Non Linear Regression = %f', diff_sum);
+    
     %% Visualization
-    plot(w_inferred);
+    bar(w_inferred - ground_truth');
     hold on
+    bar(ground_truth' - ground_truth');    
+    legend('Inference','Ground Truth');
+    title(sprintf('Non Linear Regression: %f', diff_sum));
+    
+    figure();
+    plot(w_inferred);
+    hold on;
     plot(ground_truth);
     legend('Inference','Ground Truth');
     title(sprintf('Non Linear Regression: %f', diff_sum));
+    
 result = w_inferred;

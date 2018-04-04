@@ -5,7 +5,7 @@ function draw(GT, Inference, Title)
     plot(Inference);
     legend('Ground Truth', Title);
     title(Title);
-    xlabel('Ground Truth Angle');
-    ylabel('Inference Angle');
+    xlabel('Image in Testing Dataset');
+    ylabel('Angle of Rotation');
     hold off
 end

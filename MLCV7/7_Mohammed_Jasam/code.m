@@ -15,7 +15,7 @@ TestingPath = 'testing\';
 [XTest, GT] = getData(TestingPath);
 
 % Calculating Phi to Infer Rotation of the Image
-phi1 = pinv(XTrain') * WTrain;
+phi = pinv(XTrain') * WTrain;
 
 fprintf('Results:\n')
 
@@ -23,7 +23,7 @@ fprintf('Results:\n')
 TaskName1 = 'Linear Regression';
 
 % Inference of Rotation Angle on Testing Data
-Inference1 = XTest' * phi1;
+Inference1 = XTest' * phi;
 
 % Evaluation of accuracy
 LinearRegressionResult = sum(abs(Inference1(:) - GT(:)))/ size(GT, 1);
@@ -37,9 +37,6 @@ draw(GT, Inference1, TaskName1);
 %% Task 2: Feature Selection to reduce the Dimensionality for faster computation
 TaskName2 = 'Feature Selection';
 
-% Copying Variables from Earlier Code
-WTrain2 = WTrain;
-
 % Calculating Variance on Training Data
 TrainingVariance = var(XTrain, 0, 2);
 
@@ -47,17 +44,17 @@ TrainingVariance = var(XTrain, 0, 2);
 Threshold = 1;
 
 % Selecting Features in Training Data
-XTrain2 = XTrain(TrainingVariance > Threshold, :);
+XTrainFS = XTrain(TrainingVariance > Threshold, :);
 
 % Selecting Features in Testing Data
-XTest2 = XTest(TrainingVariance > Threshold, :);
+XTestFS = XTest(TrainingVariance > Threshold, :);
 
 % Calculating Phi to Infer Rotation of the Image
-phi2 = pinv(XTrain2') * WTrain2;
+phiFS = pinv(XTrainFS') * WTrain;
 
 %% Experiment: Linear Regression using Selected Features
 % % Inference of Rotation Angle on Testing Data
-% Inference2 = XTest2' * phi2;
+% Inference2 = XTestFS' * phiFS;
 % 
 % % Evaluation of accuracy
 % FeatureSelection = sum(abs(Inference2(:) - GT(:))) / size(GT, 1);
@@ -72,16 +69,16 @@ phi2 = pinv(XTrain2') * WTrain2;
 TaskName3 = 'Bayesian Solution';
 
 % Copying Variables from Earlier Code
-XTrain3 = XTrain2; % Using the Feature Selected Training Data
-WTrain3 = WTrain; % Using the original W
-XTest3 = XTest2; % Using the Feature Selected Testing Data
-phi3 = phi2; % Using the Phi after Feature Selection
+% XTrain3 = XTrain2; % Using the Feature Selected Training Data
+% WTrain3 = WTrain; % Using the original W
+% XTest3 = XTest2; % Using the Feature Selected Testing Data
+% phi3 = phi2; % Using the Phi after Feature Selection
 
 % Variance in Phi
-VarPrior = var(phi1);
+VarPrior = var(phiFS);
 
 % Inference of Rotation Angle on Testing Data
-[Inference3, VarianceTrain3] = compute('BLR', XTrain3, WTrain3, VarPrior, XTest3);
+[Inference3, VarianceTrain] = compute('BLR', XTrainFS, WTrain, VarPrior, XTestFS);
 
 % Evaluation of accuracy
 BayesianSolution = sum(abs(Inference3(:) - GT(:))) / size(GT, 1);
@@ -96,12 +93,12 @@ draw(GT, Inference3, 'Bayesian Solution');
 TaskName4 = 'Non L.R. with F.S';
 
 % Copying Variable from Earlier Code
-XTrain4 = XTrain2;
-XTest4 = XTest2;
-WTrain4 = WTrain;
-VarianceTrain4 = VarianceTrain3;
+% XTrain4 = XTrain2;
+% XTest4 = XTest2;
+% WTrain4 = WTrain;
+% VarianceTrain = VarianceTrain;
 
-Lambda = VarianceTrain4 / var(phi3);
+Lambda = VarianceTrain / var(phiFS);
 
 % Select the Number of Polynomials
 n = 2;
@@ -111,18 +108,18 @@ ZTrain = [];
 ZTest = [];
 
 for i = 1 : n
-    NewXTrain = XTrain4 .^ i;
+    NewXTrain = XTrainFS .^ i;
     ZTrain = [ZTrain; NewXTrain];
     
-    NewXTest = XTest4 .^ i;
+    NewXTest = XTestFS .^ i;
     ZTest = [ZTest; NewXTest];
 end
 
 % Calculating Phi to Infer Rotation of the Image
-phi4 = (ZTrain * ZTrain' + Lambda * eye(size(ZTrain, 1))) \ ZTrain * WTrain2;
+phiNLR = (ZTrain * ZTrain' + Lambda * eye(size(ZTrain, 1))) \ ZTrain * WTrain;
 
 % Inference of Rotation Angle on Testing Data
-Inference4 = phi4' * ZTest;
+Inference4 = phiNLR' * ZTest;
 
 % Evaluation of accuracy
 NonLinearSolution = sum(abs(Inference4(:) - GT(:))) / size(GT, 1);
@@ -138,13 +135,13 @@ TaskName51 = 'Dual N.L.R. - F.S';
 TaskName52 = 'Dual + QuadKernel';
 
 % Method 1: Inference of Rotation Angle on Testing Data
-Lambda = VarianceTrain4 / var(phi3);
-psi = ((XTrain2' * XTrain2) * (XTrain2' * XTrain2) + Lambda * eye(size(XTrain2, 2))) \ (XTrain2' * XTrain2) * WTrain2;
-phi = XTrain2 * psi;
-Inference51 = phi' * XTest2;
+Lambda = VarianceTrain / var(phiFS);
+psi = ((XTrain' * XTrain) * (XTrain' * XTrain) + Lambda * eye(size(XTrain, 2))) \ (XTrain' * XTrain) * WTrain;
+phi = XTrain * psi;
+Inference51 = phi' * XTest;
 
 % Method 2: Kernel + Inference of Rotation Angle on Testing Data
-Inference52 = compute('DNLR', XTrain, WTrain, var(phi1), XTest);
+Inference52 = compute('DNLR', XTrain, WTrain, var(phi), XTest);
 
 % Computing the accuracy
 DualNonLinearRegression1 = sum(abs(Inference51(:) - GT(:))) / size(GT, 1);
@@ -178,3 +175,4 @@ ylabel('Angle of Rotation')
 
 hold off;
 title('Ground Truth vs Various Methods');
+return

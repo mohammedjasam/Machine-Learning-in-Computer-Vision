@@ -99,11 +99,11 @@ function [print, result, ground_truth] = Dual_Non_Linear_Regression()
     A = ((X_train' * X_train) * (X_train' * X_train)) + (lambda * eye(num_train));
     A_inv = inv(A);
 
-    psi_test = A_inv * (X_train' * X_train) * w_train;
-    phi_test = X_train * psi_test; 
+    psi = A_inv * (X_train' * X_train) * w_train;
+    phi = X_train * psi; 
     
     %% Inferring the rotation on test files
-    w_inferred = phi_test' * X_test;
+    w_inferred = phi' * X_test;
 
     %% Calculating the diff
     diff_sum = 0;
@@ -111,7 +111,6 @@ function [print, result, ground_truth] = Dual_Non_Linear_Regression()
        diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
     end
     diff_sum = diff_sum / (size(testing_files, 1) - 2);
-%     disp(sprintf('Dual Non Linear Regression = %f', diff_sum));
     print = sprintf('Dual Non Linear Regression = %f', diff_sum);
     
     %% Visualization    

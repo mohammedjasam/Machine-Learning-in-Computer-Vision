@@ -18,6 +18,7 @@ TestingPath = 'testing\';
 phi1 = pinv(XTrain') * WTrain;
 
 fprintf('Results:\n')
+
 %% Task 1: Linear Regression
 TaskName1 = 'Linear Regression';
 
@@ -108,6 +109,7 @@ n = 2;
 % Creating the Z Train and Z Test
 ZTrain = [];
 ZTest = [];
+
 for i = 1 : n
     NewXTrain = XTrain4 .^ i;
     ZTrain = [ZTrain; NewXTrain];
@@ -137,7 +139,7 @@ TaskName52 = 'Dual + QuadKernel';
 
 % Method 1: Inference of Rotation Angle on Testing Data
 Lambda = VarianceTrain4 / var(phi3);
-psi = (XTrain2' * XTrain2) * (XTrain2' * XTrain2) + Lambda * eye(size(XTrain2, 2))) \ XTrain2' * XTrain2 * WTrain2;
+psi = ((XTrain2' * XTrain2) * (XTrain2' * XTrain2) + Lambda * eye(size(XTrain2, 2))) \ (XTrain2' * XTrain2) * WTrain2;
 phi = XTrain2 * psi;
 Inference51 = phi' * XTest2;
 
@@ -150,15 +152,16 @@ DualNonLinearRegression2 = sum(abs(Inference52(:) - GT(:))) / size(GT, 1);
 
 % Displaying Dual Non-Linear Regression Result
 fprintf('%s: %f\n', TaskName51, DualNonLinearRegression1);
+
+% Experiment:
 fprintf('\nExperiment:\n')
 fprintf('%s: %f\n', TaskName52, DualNonLinearRegression2);
 
 % Graph
 draw(GT, Inference51, TaskName51);
-draw(GT, Inference52, TaskName52);
+draw(GT, Inference52, TaskName52); % Using Quadratic Kernel
 
 %% Visualization
-% close all;
 figure();
 plot(GT);         hold on;
 plot(Inference1); hold on;

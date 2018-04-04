@@ -21,7 +21,8 @@ function [print, result, ground_truth] = Bayesian_Regularization()
         image = image(:,:,1);
         X_train = [X_train image(:)];
     end
-
+    
+    % Feature Selection
     X_train = double(X_train);
     ones_row = ones(1, size(X_train, 2));
     var_mat = var(X_train, 0, 2);
@@ -55,7 +56,8 @@ function [print, result, ground_truth] = Bayesian_Regularization()
         image = image(:,:,1);
         X_test = [X_test image(:)];
     end
-
+    
+    % Feature Selection
     X_test = double(X_test);
     ones_row = ones(1, size(X_test, 2));
     var_mat = var(X_train, 0, 2);

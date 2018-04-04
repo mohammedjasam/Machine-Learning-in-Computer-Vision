@@ -55,3 +55,7 @@ hold on
 bar(diff(:,5))
 hold on
 bar(gt' - gt')
+
+title('Deviation Chart')
+legend('Ground Truth', 'Linear Regression', 'Feature Selection',...
+        'Bayesian LR + FS', 'Non Linear Regression', 'Dual Non-LR');

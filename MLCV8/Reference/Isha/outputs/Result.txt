@@ -1,0 +1,13 @@
+File	Miss detection	False alarm
+Logr	0.2112		0.0550
+BLogr	0.5560		0.0230
+DLogr	0.2716		0.0301
+DBLogr	0.2716		0.0284
+KLogr	0.2931		0.0496
+RVLogr	0.6595		0.0106
+		
+			
+
+
+
+

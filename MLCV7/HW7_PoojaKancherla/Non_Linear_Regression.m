@@ -104,8 +104,8 @@ function [print, result, ground_truth] = Non_Linear_Regression()
     for i = 1 : size(testing_files, 1) - 2
        diff_sum = diff_sum + abs(w_inferred(i) - ground_truth(i));
     end
+    
     diff_sum = diff_sum / (size(testing_files, 1) - 2);
-%     disp(sprintf('Non Linear Regression = %f', diff_sum));
     print = sprintf('Non Linear Regression = %f', diff_sum);
     
     %% Visualization

@@ -14,13 +14,13 @@ TestingPath = 'testing\';
 % Extracting the Testing Data
 [XTest, GT] = getData(TestingPath);
 
-% Calculating Phi to Infer Rotation of the Image
-phi = pinv(XTrain') * WTrain;
-
 fprintf('Results:\n')
 
 %% Task 1: Linear Regression
 TaskName1 = 'Linear Regression';
+
+% Calculating Phi to Infer Rotation of the Image
+phi = pinv(XTrain') * WTrain;
 
 % Inference of Rotation Angle on Testing Data
 Inference1 = XTest' * phi;

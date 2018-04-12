@@ -1,0 +1,16 @@
+%% Preprocessing
+% Clear Everything
+clc;
+clear;
+close all;
+
+% Importing functions from a sub folder
+addpath('./models');
+
+% Directories
+TrainingFacePath = 'trainingImages\face_resized\';
+TrainingBackgroundPath = 'trainingImages\background_resized\';
+TestingFacePath = 'testingImages\face_resized\';
+TestingBackgroundPath = 'testingImages\background_resized\';
+
+[XFaceTrain, XFac]

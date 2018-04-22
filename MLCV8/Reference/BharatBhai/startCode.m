@@ -24,7 +24,7 @@ w_test = [zeros(size(X_test_w0,2),1); ones(size(X_test_w1,2),1)];
 miss_detection = zeros(6,1);
 false_alarm = zeros(6,1);
 
-
+return
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Logistic Regression
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

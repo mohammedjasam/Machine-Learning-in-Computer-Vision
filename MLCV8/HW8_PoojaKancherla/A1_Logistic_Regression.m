@@ -1,7 +1,7 @@
 clc; 
 clear; 
 close all;
-warning ('off','all');
+warning ('on','all');
 
 train_face_dir = 'trainingImages\face_resized\';
 train_back_dir = 'trainingImages\background_resized\';
@@ -23,7 +23,6 @@ w_test = [ones(size(X_face_test, 1), 1); zeros(size(X_back_test, 1), 1)];
 
 % Initial Phi value
 initial_phi = pinv(X_train') * w_train;
-% initial_phi1 = zeros(size(X_train, 1), 1); 
 
 var_prior = var(initial_phi);
 

@@ -24,17 +24,16 @@ w_test = [ones(size(X_face_test, 1), 1); zeros(size(X_back_test, 1), 1)];
 % Initial Phi value
 initial_phi = pinv(X_train') * w_train;
 
-% Variance
-var_prior = var(initial_phi);
-
 %% Testing
 lambda = 1;
-initial_psi = zeros(size(X_face_train, 1) + size(X_back_train, 1));
+nu = 1;
+initial_psi = zeros((size(X_face_train, 1) + size(X_back_train, 1)), 1);
+var_prior = var(initial_phi);
 
-[predictions, phi] = fit_dlogr (X_train, w_train, var_prior, X_test, initial_psi);
+[predictions, phi] = fit_rvc (X_train, w_train, nu, X_test, initial_psi, @kernel_gauss, lambda);
 
 for i = 1 : length(predictions)
-    if predictions(i) > 0.5
+    if predictions(i) >= 0.5
        predictions(i) = 1;
     else
        predictions(i) = 0;
@@ -54,7 +53,7 @@ for i = (size(X_face_test, 1) + 1) : (size(X_face_test, 1) + size(X_back_test, 1
 end
 false_alarm = false_alarm / size(X_back_test, 1);
 
-fprintf('\n\nDual Logistic Regression\n');
+fprintf('\n\nKernel Logistic Regression\n');
 fprintf('-------------------\n');
 fprintf('Misdetection: %f\nFalse Alarm: %f\n\n\n', misdetection, false_alarm);
 

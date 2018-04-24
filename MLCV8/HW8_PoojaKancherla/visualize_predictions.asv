@@ -1,0 +1,34 @@
+function visualize_predictions(predictions, num_of_op)
+
+    testing_dir = 'testingImages\';
+    temp = dir(testing_dir);
+    rand_set = random_nums(1 : num_of_op);
+    num_test_face = 199;
+    
+    random_nums = randperm(200);
+    path = strcat(testing_dir, temp(3).name, '\');
+    
+    for f = rand_set
+        temp = dir(testing_dir);
+        images = dir(path);
+        im = imread(strcat(path, images(f).name));
+        figure; imshow(im)
+
+        title(sprintf('%f', predictions(num_test_face + f)))
+    end
+    
+    
+    random_nums = randperm(200);    
+    path = strcat(testing_dir, temp(4).name,'\');
+    rand_set = random_nums(1 : num_of_op);
+    
+    for f = rand_set
+        temp = dir(testing_dir);
+        images = dir(path);
+        im = imread(strcat(path, images(f).name));
+        figure; imshow(im)
+        title(sprintf('%f', predictions(f)))
+    end
+
+
+end

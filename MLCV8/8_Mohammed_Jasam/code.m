@@ -86,7 +86,7 @@ fprintf('_____________________________________________________\n');
 fprintf('3. Dual Logistic Regression:\n')
 fprintf('   -------------------------\n')
 fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection3, FalseAlarm3)
-fprintf('___________________________OKM,N LUO/980P__________________________\n');
+fprintf('_____________________________________________________\n');
 fprintf('4. Dual Bayesian Logistic Regression:\n')
 fprintf('   ----------------------------------\n')
 fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection4, FalseAlarm4)

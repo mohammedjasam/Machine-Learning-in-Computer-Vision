@@ -3,7 +3,7 @@ clc; clear all; close all;
 facedir_training = 'trainingImages\';
 facedir_testing = 'testingImages\';
 
-colorSpace = 'Gradient'; %RGB, Gray, HSV, YCbCr, HSVYCbCr, Gradient
+colorSpace = 'RGB'; %RGB, Gray, HSV, YCbCr, HSVYCbCr, Gradient
 nSubject = 2; %There are 33 persons in the training dataset. There are only 27 in the testing dataset
 
 
@@ -76,6 +76,7 @@ im = imread(strcat(temppath,temp_ims(f).name));
 figure;imshow(im)
 title(sprintf('%f',predictions(564+f)))
 end
+return
 %% baysian
 [predictions, phi] = fit_blogr ([ones(1,433);allFaceIms_training], labels, 3.5, [ones(1,796);allFaceIms_testing],zeros(241,1));
 missd_detection=abs(sum(labels_test(1:564)-abs(predictions(1:564)'))/564)

@@ -16,20 +16,19 @@ colorSpace = 'RGB'; % RGB, HSV, YCbCr, Gray, Gradient
     NumTestFace, NumTestBackground] = getData(colorSpace);
 
 %% Task 1: Logistic Regression
-InitialPhi = pinv(XTrain') * WTrain; % Phi
-% InitialPhi = pinv(XTrain(2 : end, :)') * WTrain; % Phi
-% InitialPhi = [1; InitialPhi];
+InitialPhi = pinv(XTrain(2 : end, :)') * WTrain; % Phi
+InitialPhi = [1; InitialPhi];
 VarPrior = var(InitialPhi); % Variance
 
 % Inference
-Inference1 = fit_logr (XTrain, WTrain, VarPrior, XTest, InitialPhi);
+[Inference1, Phi1] = fit_logr (XTrain, WTrain, VarPrior, XTest, InitialPhi);
 
 % Evaluation
 [MissDetection1, FalseAlarm1] = evaluate(WTest, Inference1, NumTestFace, NumTestBackground);
 
 %% Task 2: Bayesian Logistic Regression
 % Inference
-Inference2 = fit_blogr (XTrain, WTrain, VarPrior, XTest, InitialPhi);
+[Inference2, Phi2] = fit_blogr (XTrain, WTrain, VarPrior, XTest, InitialPhi);
 
 % Evaluation
 [MissDetection2, FalseAlarm2] = evaluate(WTest, Inference2, NumTestFace, NumTestBackground);
@@ -39,7 +38,7 @@ InitialPsi = zeros((NumTrainFace + NumTrainBackground), 1); % Psi
 VarPrior = []; % Variance
 
 % Inference
-Inference3 = fit_dlogr (XTrain, WTrain, VarPrior, XTest, InitialPsi);
+[Inference3, Phi3] = fit_dlogr (XTrain, WTrain, VarPrior, XTest, InitialPsi);
 
 % Evaluation
 [MissDetection3, FalseAlarm3] = evaluate(WTest, Inference3, NumTestFace, NumTestBackground);
@@ -49,7 +48,7 @@ VarPrior = var(InitialPhi); % Variance
 InitialPsi = zeros((NumTrainFace + NumTrainBackground), 1); % Psi
 
 % Inference
-Inference4 = fit_dblogr (XTrain, WTrain, VarPrior, XTest, InitialPsi);
+[Inference4, Phi4] = fit_dblogr (XTrain, WTrain, VarPrior, XTest, InitialPsi);
 
 % Evaluation
 [MissDetection4, FalseAlarm4] = evaluate(WTest, Inference4, NumTestFace, NumTestBackground);
@@ -58,7 +57,7 @@ Inference4 = fit_dblogr (XTrain, WTrain, VarPrior, XTest, InitialPsi);
 Lambda = 1; % Lambda 
 
 % Inference
-Inference5 = fit_klogr (XTrain, WTrain, VarPrior, XTest, InitialPsi, @kernel_gauss, Lambda);
+[Inference5, Phi5] = fit_klogr (XTrain, WTrain, VarPrior, XTest, InitialPsi, @kernel_gauss, Lambda);
 
 % Evaluation
 [MissDetection5, FalseAlarm5] = evaluate(WTest, Inference5, NumTestFace, NumTestBackground);
@@ -67,7 +66,7 @@ Inference5 = fit_klogr (XTrain, WTrain, VarPrior, XTest, InitialPsi, @kernel_gau
 Nu = 1; % Nu
 
 % Inference
-Inference6 = fit_rvc (XTrain, WTrain, Nu, XTest, InitialPsi, @kernel_gauss, Lambda);
+[Inference6, Phi6] = fit_rvc (XTrain, WTrain, Nu, XTest, InitialPsi, @kernel_gauss, Lambda);
 
 % Evaluation
 [MissDetection6, FalseAlarm6] = evaluate(WTest, Inference6, NumTestFace, NumTestBackground);
@@ -86,7 +85,7 @@ fprintf('_____________________________________________________\n');
 fprintf('3. Dual Logistic Regression:\n')
 fprintf('   -------------------------\n')
 fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection3, FalseAlarm3)
-fprintf('___________________________OKM,N LUO/980P__________________________\n');
+fprintf('_____________________________________________________\n');
 fprintf('4. Dual Bayesian Logistic Regression:\n')
 fprintf('   ----------------------------------\n')
 fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection4, FalseAlarm4)

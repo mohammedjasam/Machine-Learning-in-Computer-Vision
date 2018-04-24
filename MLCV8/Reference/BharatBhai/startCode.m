@@ -24,7 +24,7 @@ w_test = [zeros(size(X_test_w0,2),1); ones(size(X_test_w1,2),1)];
 miss_detection = zeros(6,1);
 false_alarm = zeros(6,1);
 
-return
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Logistic Regression
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,8 +32,9 @@ return
 %%
 
 initial_phi = pinv(X(2:end,:)')*w;
+initial_phi1 = pinv(X(2:end,:)')*w;
 initial_phi = [1;initial_phi];
-
+return
 % initial_phi = rand(241,1);
 % initial_psi = rand(433,1);
 var_prior = var(initial_phi(:));
@@ -160,7 +161,7 @@ sum=0;
 for j = bg_index_start:bg_index_end
     sum = sum + abs(w_test(j) - infer(j));
 end
-false_alarm(4) = sum/j;
+false_alarm(4) = sum/j; 
 %%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

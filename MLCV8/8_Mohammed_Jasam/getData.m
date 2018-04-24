@@ -23,8 +23,15 @@ function [XTrain, WTrain, XTest, WTest, NumTrainFace, NumTrainBackground, NumTes
     NumTestFace = size(XFaceTest, 2);
     NumTestBackground = size(XBackgroundTest, 2);
 
+    % Face first then Background
     XTrain = [(ones(1, (NumTrainFace + NumTrainBackground))); [XFaceTrain, XBackgroundTrain]];
     WTrain = [ones(NumTrainFace, 1); zeros(NumTrainBackground, 1)];
     XTest = [(ones(1, (NumTestFace + NumTestBackground))); [XFaceTest, XBackgroundTest]];
     WTest = [ones(NumTestFace, 1); zeros(NumTestBackground, 1)];
+
+%     % Background first then Face
+%     XTrain = [(ones(1, (NumTrainFace + NumTrainBackground))); [XBackgroundTrain, XFaceTrain]];
+%     WTrain = [zeros(NumTrainBackground, 1); ones(NumTrainFace, 1)];
+%     XTest = [(ones(1, (NumTestFace + NumTestBackground))); [XBackgroundTest, XFaceTest]];
+%     WTest = [zeros(NumTestBackground, 1); ones(NumTestFace, 1)];
 end

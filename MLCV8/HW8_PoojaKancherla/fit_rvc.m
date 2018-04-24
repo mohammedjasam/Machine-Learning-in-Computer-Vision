@@ -18,7 +18,7 @@
 %         relevant_points - Ix1 boolean vector where a 1 at position i
 %                           indicates that point X(:,i) remained after
 %                           the elimination phase, that is, it is relevant.
-function [predictions, relevant_points] = fit_rvc (X, w, nu, X_test,...
+function [predictions, relevant_points] = fit_rvc (num_iterations, X, w, nu, X_test,...
     initial_psi, kernel, lambda)
     % Compute K[X,X].
     I = size(X,2);
@@ -61,7 +61,7 @@ function [predictions, relevant_points] = fit_rvc (X, w, nu, X_test,...
         
         iterations_count = iterations_count + 1;
         disp(['iteration ' num2str(iterations_count)]);
-        if (iterations_count == 20)
+        if (iterations_count == num_iterations)
             break;
         end
     end
@@ -74,7 +74,7 @@ function [predictions, relevant_points] = fit_rvc (X, w, nu, X_test,...
     mu = mu(selector);
     sig = sig(selector, selector);
     relevant_points = selector;
-    disp(H);
+%     disp(H);
     
     % Recompute K[X,X].
     I = size(X,2);

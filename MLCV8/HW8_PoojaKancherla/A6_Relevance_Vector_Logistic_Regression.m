@@ -43,7 +43,14 @@ results = [];
            predictions(i) = 0;
         end
     end
- 
+    
+    % Visualizing the predictions
+    num_of_op = 4;
+    num_test_face = size(X_face_test, 1);
+    visualize_predictions(num_of_op, test_face_dir, test_back_dir, predictions, num_test_face);
+
+
+    % Evaluation
     miss_detection_rate = 0;
     false_alarm_rate = 0;
 

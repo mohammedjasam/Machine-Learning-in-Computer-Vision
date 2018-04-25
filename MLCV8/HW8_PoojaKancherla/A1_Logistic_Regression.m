@@ -38,7 +38,7 @@ for i = 1 : length(predictions)
 end
 
 % Visualizing the predictions
-num_of_op = 2;
+num_of_op = 4;
 num_test_face = size(X_face_test, 1);
 visualize_predictions(num_of_op, test_face_dir, test_back_dir, predictions, num_test_face);
 

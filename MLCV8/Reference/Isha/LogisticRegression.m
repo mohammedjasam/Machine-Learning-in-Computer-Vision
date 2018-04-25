@@ -107,3 +107,11 @@ ylabel('Image 0-1');
 legend('Predictions');
 
 
+x = [];
+for i = 1 : (size(WTest, 1))
+x = [x; i];
+end
+plot(x, WTest)
+hold on
+plot(x, Inference1)
+figure; plot(WTest, Inference1);

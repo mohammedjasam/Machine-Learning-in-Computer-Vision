@@ -17,8 +17,6 @@ colorSpace = 'RGB'; % RGB, HSV, YCbCr, Gray, Gradient
 
 %% Task 1: Logistic Regression
 InitialPhi = pinv(XTrain') * WTrain; % Phi
-% InitialPhi = pinv(XTrain(2 : end, :)') * WTrain; % Phi
-% InitialPhi = [1; InitialPhi];
 VarPrior = var(InitialPhi); % Variance
 
 % Inference
@@ -36,10 +34,10 @@ Inference2 = fit_blogr (XTrain, WTrain, VarPrior, XTest, InitialPhi);
 
 %% Task 3: Dual Logistic Regression
 InitialPsi = zeros((NumTrainFace + NumTrainBackground), 1); % Psi
-VarPrior = []; % Variance
+VarPrior = 0; % Variance
 
 % Inference
-Inference3 = fit_dlogr (XTrain, WTrain, VarPrior, XTest, InitialPsi);
+Inference3 = fit_dlogr (XTrain, WTrain, 0, XTest, InitialPsi);
 
 % Evaluation
 [MissDetection3, FalseAlarm3] = evaluate(WTest, Inference3, NumTestFace, NumTestBackground);
@@ -55,7 +53,7 @@ Inference4 = fit_dblogr (XTrain, WTrain, VarPrior, XTest, InitialPsi);
 [MissDetection4, FalseAlarm4] = evaluate(WTest, Inference4, NumTestFace, NumTestBackground);
 
 %% Task 5: Kernel Logistic Regression
-Lambda = 0.1; % Lambda 
+Lambda = 1; % Lambda 
 
 % Inference
 Inference5 = fit_klogr (XTrain, WTrain, VarPrior, XTest, InitialPsi, @kernel_gauss, Lambda);
@@ -77,25 +75,25 @@ fprintf('\n\n\n\nResults:\n');
 fprintf('_____________________________________________________\n');
 fprintf('1. Logistic Regression:\n')
 fprintf('   --------------------\n')
-fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection1, FalseAlarm1)
+fprintf('   Miss Detection Rate: %f\n   False - Alarm  Rate: %f\n\n', MissDetection1, FalseAlarm1)
 fprintf('_____________________________________________________\n');
 fprintf('2. Bayesian Logistic Regression:\n')
 fprintf('   -----------------------------\n')
-fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection2, FalseAlarm2)
+fprintf('   Miss Detection Rate: %f\n   False - Alarm  Rate: %f\n\n', MissDetection2, FalseAlarm2)
 fprintf('_____________________________________________________\n');
 fprintf('3. Dual Logistic Regression:\n')
 fprintf('   -------------------------\n')
-fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection3, FalseAlarm3)
+fprintf('   Miss Detection Rate: %f\n   False - Alarm  Rate: %f\n\n', MissDetection3, FalseAlarm3)
 fprintf('_____________________________________________________\n');
 fprintf('4. Dual Bayesian Logistic Regression:\n')
 fprintf('   ----------------------------------\n')
-fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection4, FalseAlarm4)
+fprintf('   Miss Detection Rate: %f\n   False - Alarm  Rate: %f\n\n', MissDetection4, FalseAlarm4)
 fprintf('_____________________________________________________\n');
 fprintf('5. Kernel Logistic Regression:\n')
 fprintf('   ---------------------------\n')
-fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection5, FalseAlarm5)
+fprintf('   Miss Detection Rate: %f\n   False - Alarm  Rate: %f\n\n', MissDetection5, FalseAlarm5)
 fprintf('_____________________________________________________\n');
 fprintf('6. Relevance Vector Logistic Regression:\n')
 fprintf('   -------------------------------------\n')
-fprintf('   Misdetection: %f\n   False  Alarm: %f\n\n', MissDetection6, FalseAlarm6)
+fprintf('   Miss Detection Rate: %f\n   False - Alarm  Rate: %f\n\n', MissDetection6, FalseAlarm6)
 fprintf('_____________________________________________________\n\n\n');

@@ -26,7 +26,7 @@ initial_phi = pinv(X_train') * w_train;
 
 %% Testing
 lambda = 1;
-nu = 1;
+nu = 10;
 initial_psi = zeros((size(X_face_train, 1) + size(X_back_train, 1)), 1);
 var_prior = var(initial_phi);
 % num_iterations = 10; 

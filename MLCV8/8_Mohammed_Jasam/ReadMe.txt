@@ -1,0 +1,1 @@
+All the methods are available in 'code.m', click on run to execute them all. Once they are executed the results are visualized

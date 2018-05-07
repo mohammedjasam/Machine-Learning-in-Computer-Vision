@@ -21,7 +21,7 @@ layers = [imageInputLayer([40 30 3], 'DataAugmentation', 'randcrop');
           reluLayer();
           maxPooling2dLayer(2,'Stride',2);
           
-          dropoutLayer(0.3, 'Name', 'drop1')
+          dropoutLayer(0.4, 'Name', 'drop1')
           fullyConnectedLayer(2);
           softmaxLayer();
           classificationLayer()];  

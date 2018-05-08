@@ -40,5 +40,7 @@ YTest = classify(convnet,testData);
 TTest = testData.Labels;
 toc
 
+
+
 % Calculate the accuracy. 
 accuracy = sum(YTest == TTest)/numel(TTest)   
